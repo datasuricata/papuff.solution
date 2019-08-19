@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\papuff.datainfra\papuff.datainfra.csproj" />
+    <ProjectReference Include="..\papuff.services\papuff.services.csproj" />
+  </ItemGroup>
+
+</Project>
