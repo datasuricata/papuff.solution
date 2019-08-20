@@ -6,9 +6,11 @@ using papuff.datainfra.Transaction;
 using papuff.domain.Interfaces.Repositories;
 using papuff.domain.Interfaces.Services.Base;
 using papuff.domain.Interfaces.Services.Core;
+using papuff.domain.Interfaces.Services.Swap;
 using papuff.domain.Notifications.Events;
 using papuff.services.Services.Base;
 using papuff.services.Services.Core.pegabicho.service.Services.Core;
+using papuff.services.Services.Swap;
 
 namespace papuff.bootstrap {
     public static class Bootstrap {
@@ -52,6 +54,12 @@ namespace papuff.bootstrap {
             #region [ core ]
 
             services.AddScoped(typeof(IServiceUser), typeof(ServiceUser));
+
+            #endregion
+
+            #region [ swap ]
+
+            services.AddScoped(typeof(ISwapSiege), typeof(SwapSiege));
 
             #endregion
         }

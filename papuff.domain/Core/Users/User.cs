@@ -5,8 +5,14 @@ using System.Collections.Generic;
 namespace papuff.domain.Core.Users {
     public class User : EntityBase {
 
-        // for entity
-        //protected User() { }
+        public User(string email, string password, string nick) {
+
+            Email = email;
+            Password = password;
+            Nick = nick;
+        }
+
+        protected User() { }
 
         public string Email { get; set; }
         public string Password { get; set; }

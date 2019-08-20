@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Linq;
 
 namespace papuff.domain.Notifications.Events {
+
     public class EventNotifier : IEventNotifier {
 
         #region [ parameters ]
@@ -67,12 +69,6 @@ namespace papuff.domain.Notifications.Events {
         public IEnumerable<Notification> GetNotifications() => Notifier.Notifications.AsEnumerable();
 
         #endregion
-
-        //#region [ overrides ]
-
-        //public override string ToString() => JsonConvert.SerializeObject(Notifier);
-
-        //#endregion
 
         #region [ dispose ]
 

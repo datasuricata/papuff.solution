@@ -4,6 +4,7 @@ using papuff.domain.Interfaces.Repositories;
 using papuff.domain.Interfaces.Services.Base;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace papuff.services.Services.Base {
     public class ServiceApp<T> : ServiceBase, IServiceApp<T> where T : EntityBase {

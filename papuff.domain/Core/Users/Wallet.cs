@@ -4,7 +4,25 @@ using papuff.domain.Core.Enums;
 namespace papuff.domain.Core.Users {
     public class Wallet : EntityBase {
 
-        // for entity
+        public Wallet(PaymentType type, string agency, string account, string document, int dateDue, bool isDefault, string userId) {
+            Type = type;
+            Agency = agency;
+            Account = account;
+            Document = document;
+            DateDue = dateDue;
+            IsDefault = isDefault;
+            UserId = userId;
+        }
+
+        public void Update(PaymentType type, string agency, string account, string document, int dateDue, bool isDefault) {
+            Type = type;
+            Agency = agency;
+            Account = account;
+            Document = document;
+            DateDue = dateDue;
+            IsDefault = isDefault;
+        }
+
         protected Wallet() { }
 
         public PaymentType Type { get; private set; }

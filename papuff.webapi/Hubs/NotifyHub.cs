@@ -14,8 +14,8 @@ namespace papuff.webapi.Hubs {
         /// <summary>
         /// join into ticket for general view by group ticket
         /// </summary>
-        /// <param name="orderId"></param>
+        /// <param name="siegeId"></param>
         /// <returns></returns>
-        public async Task JoinGroup(string orderId) => await Groups.AddToGroupAsync(Context.ConnectionId, orderId);
+        public async Task JoinGroup(string siegeId) => await Groups.AddToGroupAsync(Context.ConnectionId, siegeId);
     }
 }
