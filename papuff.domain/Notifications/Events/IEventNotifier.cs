@@ -7,7 +7,7 @@ namespace papuff.domain.Notifications.Events {
         void Add<N>(string message);
         void When<N>(bool hasError, string message);
         void AddException<N>(string message, Exception exception = null);
-        bool HasAny();
+        bool IsValid { get; }
         IEnumerable<Notification> GetNotifications();
     }
 }

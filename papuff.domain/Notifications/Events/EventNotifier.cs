@@ -11,7 +11,7 @@ namespace papuff.domain.Notifications.Events {
         #region [ parameters ]
 
         private Notifier Notifier;
-        private bool disposed = false;
+        private bool _disposed;
 
         #endregion
 
@@ -64,7 +64,7 @@ namespace papuff.domain.Notifications.Events {
             });
         }
 
-        public bool HasAny() => Notifier.HasAny;
+        public bool IsValid => !Notifier.HasAny;
 
         public IEnumerable<Notification> GetNotifications() => Notifier.Notifications.AsEnumerable();
 
@@ -73,11 +73,11 @@ namespace papuff.domain.Notifications.Events {
         #region [ dispose ]
 
         protected virtual void Dispose(bool disposing) {
-            if (!this.disposed)
+            if (!this._disposed)
                 if (disposing)
                     Notifier.Notifications.Clear();
 
-            this.disposed = true;
+            this._disposed = true;
         }
 
         public void Dispose() {

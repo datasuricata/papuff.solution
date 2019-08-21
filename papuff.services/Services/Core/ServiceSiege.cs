@@ -7,22 +7,23 @@ using papuff.services.Validators.Core.Sieges;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using papuff.domain.Core.Users;
 
 namespace papuff.services.Services.Core {
     public class ServiceSiege : ServiceApp<Siege>, IServiceSiege {
 
-        private readonly ISwapSiege swap;
+        private readonly ISwapSiege _swap;
 
         public ServiceSiege(IServiceProvider provider, ISwapSiege swap) : base(provider) {
-            this.swap = swap;
+            _swap = swap;
         }
 
         public Siege GetById(string id) {
-            return swap.GetById(id);
+            return _swap.GetById(id);
         }
 
         public List<Siege> ListSieges() {
-            return swap.ListSieges();
+            return _swap.ListSieges();
         }
 
         public async Task Register(SiegeRequest request) {
@@ -30,18 +31,31 @@ namespace papuff.services.Services.Core {
                 request.ImageUri, request.Range, request.Start, request.Available, request.OwnerId);
 
             ValidEntity<SiegeValidator>(siege);
-            swap.Add(siege);
+            _swap.Add(siege);
             //RegisterEvents(siege); //todo events invoke
             //swap.Start(); //todo start Siege
             await repository.RegisterAsync(siege);
         }
 
         public async Task Close(string id) {
-            swap.Close(id);
+            _swap.Close(id);
             //swap.End(); // todo end Siege
             var siege = await repository.GetByIdAsync(id);
             siege.Ended = DateTime.UtcNow;
             repository.Update(siege);
+        }
+
+        public async Task ReceiveUser(string id, User logged) {
+
+            // todo valid user
+            _swap.ReceiveUser(id, logged);
+            // todo push notification new entry
+        }
+
+        public async Task RemoveUser(string id, User logged) {
+            
+            // todo valid user
+            _swap.RemoveUser(id, logged);
         }
     }
 }

@@ -9,9 +9,8 @@ namespace papuff.services.Services.Base {
 
         #region [ attributes ]
 
-        private readonly IUnitOfWork uow;
-        private readonly IServiceProvider provider;
-
+        private readonly IUnitOfWork _uow;
+        
         protected readonly IEventNotifier Notifier;
         //protected readonly ILogEvent Log;
         
@@ -20,8 +19,7 @@ namespace papuff.services.Services.Base {
         #region [ ctor ]
 
         public ServiceBase(IServiceProvider provider) {
-            this.provider = provider;
-            uow = (IUnitOfWork)provider.GetService(typeof(IUnitOfWork));
+            _uow = (IUnitOfWork)provider.GetService(typeof(IUnitOfWork));
             Notifier = (IEventNotifier)provider.GetService(typeof(IEventNotifier));
         }
 
@@ -30,13 +28,13 @@ namespace papuff.services.Services.Base {
         #region [ persistence ]
 
         public async Task Commit() {
-            if (Notifier.HasAny())
+            if (!Notifier.IsValid)
                 return;
 
-            await uow.Commit();
+            await _uow.Commit();
         }
 
-        public async Task CommitForce() => await uow.Commit();
+        public async Task CommitForce() => await _uow.Commit();
 
         #endregion
     }

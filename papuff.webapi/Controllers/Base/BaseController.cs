@@ -15,11 +15,13 @@ namespace papuff.webapi.Controllers.Base {
     public class BaseController : ControllerBase {
         #region [ parameters ]
 
-        private IServiceUser serviceUser =>
-            (IServiceUser)HttpContext.RequestServices.GetService(typeof(IServiceUser));
+        private IServiceUser ServiceUser =>
+            (IServiceUser)HttpContext.RequestServices
+                .GetService(typeof(IServiceUser));
 
-        private IEventNotifier notifier =>
-            (IEventNotifier)HttpContext.RequestServices.GetService(typeof(IEventNotifier));
+        private IEventNotifier Notifier =>
+            (IEventNotifier)HttpContext.RequestServices
+                .GetService(typeof(IEventNotifier));
 
         #endregion
 
@@ -41,8 +43,8 @@ namespace papuff.webapi.Controllers.Base {
         /// <returns></returns>
         protected IActionResult Result(object result = null) {
             try {
-                if (notifier.HasAny())
-                    return BadRequest(notifier.GetNotifications());
+                if (!Notifier.IsValid)
+                    return BadRequest(Notifier.GetNotifications());
 
                 if (result == null)
                     return Ok();
@@ -62,21 +64,13 @@ namespace papuff.webapi.Controllers.Base {
         /// return user info from current context
         /// </summary>
         /// <returns></returns>
-        protected User Logged {
-            get {
-                return serviceUser?.GetMe(User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "");
-            }
-        }
+        protected User Logged => ServiceUser?.GetMe(User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "");
 
         /// <summary>
         /// return user info from current context
         /// </summary>
         /// <returns></returns>
-        protected string LoggedLess {
-            get {
-                return User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-            }
-        }
+        protected string LoggedLess => User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         #endregion
 
@@ -86,31 +80,29 @@ namespace papuff.webapi.Controllers.Base {
         /// return server info used for request
         /// </summary>
         /// <returns></returns>
-        protected string ServerUri() {
-            return Request.GetDisplayUrl();
-        }
+        protected string ServerUri() => Request.GetDisplayUrl();
 
         /// <summary>
         /// return ip from request context
         /// </summary>
         /// <returns></returns>
-        protected string RequestIp() {
-            return HttpContext.Connection.RemoteIpAddress.ToString();
-        }
+        protected string RequestIp() => HttpContext.Connection.RemoteIpAddress.ToString();
 
         #endregion
 
         #region [ components ]
 
-        protected List<SelectListItem> ToDropDown<T>(List<T> list, string text, string value) {
-            List<SelectListItem> dropdown = new List<SelectListItem>();
-            foreach (var item in list) {
-                var sItem = new SelectListItem();
-                sItem.Text = item.GetType().GetProperty(text).GetValue(item, null) as string;
-                sItem.Value = item.GetType().GetProperty(value).GetValue(item, null) as string;
-                dropdown.Add(sItem);
-            }
-
+        protected List<SelectListItem> ToDropDown<T>(IEnumerable<T> list, string text, string value) {
+            var dropdown = list.Select(item => new SelectListItem {
+                Text = item.GetType()
+                    .GetProperty(text)
+                    .GetValue(item, null) as string, 
+                
+                Value = item.GetType()
+                    .GetProperty(value)
+                    .GetValue(item, null) as string
+            }).ToList();
+            
             return dropdown.OrderBy(x => x.Text).ToList();
         }
 
@@ -118,17 +110,16 @@ namespace papuff.webapi.Controllers.Base {
         /// Create a Dropdown Enum
         /// </summary>
         /// <typeparam name="T">Generic Enum</typeparam>
-        /// <param name="excludeProps">Exclude attribute</param>
+        /// <param name="prop">Exclude attribute</param>
         /// <returns></returns>
-        protected List<SelectListItem> ToEnumDropDown<T>(string excludeProps = "") {
-            List<SelectListItem> dropdown = new List<SelectListItem>();
-            foreach (var item in Enum.GetValues(typeof(T))) {
-                if (excludeProps != Enum.GetName(typeof(T), item)) {
-                    var sItem = new SelectListItem();
-                    sItem.Text = Helpers.EnumDisplay(item as Enum);
-                    sItem.Value = ((int)item).ToString();
-                    dropdown.Add(sItem);
-                }
+        protected List<SelectListItem> ToEnumDropDown<T>(string prop = "") {
+            var dropdown = new List<SelectListItem>();
+            foreach (var i in Enum.GetValues(typeof(T))) {
+                if (prop == Enum.GetName(typeof(T), i)) continue;
+                var sItem = new SelectListItem {
+                    Text = (i as Enum).EnumDisplay(), Value = ((int) i).ToString()
+                };
+                dropdown.Add(sItem);
             }
             return dropdown.OrderBy(x => x.Text).ToList();
         }
