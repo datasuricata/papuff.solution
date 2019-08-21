@@ -1,47 +1,61 @@
-﻿using papuff.domain.Arguments.Sieges;
+﻿using Microsoft.AspNetCore.SignalR;
+using Newtonsoft.Json;
+using papuff.domain.Arguments.Sieges;
 using papuff.domain.Core.Sieges;
+using papuff.domain.Core.Users;
 using papuff.domain.Interfaces.Services.Core;
 using papuff.domain.Interfaces.Services.Swap;
+using papuff.services.Hubs;
 using papuff.services.Services.Base;
 using papuff.services.Validators.Core.Sieges;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using papuff.domain.Core.Users;
 
 namespace papuff.services.Services.Core {
     public class ServiceSiege : ServiceApp<Siege>, IServiceSiege {
 
         private readonly ISwapSiege _swap;
+        private readonly IHubContext<NotifyHub> _hub;
 
-        public ServiceSiege(IServiceProvider provider, ISwapSiege swap) : base(provider) {
+        public ServiceSiege(IServiceProvider provider, ISwapSiege swap, IHubContext<NotifyHub> hub) : base(provider) {
             _swap = swap;
+            _hub = hub;
         }
 
-        public Siege GetById(string id) {
-            return _swap.GetById(id);
-        }
+        public Siege GetById(string id) => _swap.GetById(id);
 
-        public List<Siege> ListSieges() {
-            return _swap.ListSieges();
-        }
+        public List<Siege> ListSieges() => _swap.ListSieges();
 
         public async Task Register(SiegeRequest request) {
-            var siege = new Siege(request.Visibility, request.Title, request.Description,
-                request.ImageUri, request.Range, request.Start, request.Available, request.OwnerId);
 
-            ValidEntity<SiegeValidator>(siege);
+            new SiegeValidator().Validate(request);
+
+            var siege = new Siege(request.Visibility, request.Title, request.Description,
+                request.ImageUri, request.Range, request.Seconds, request.OwnerId);
+
             _swap.Add(siege);
-            //RegisterEvents(siege); //todo events invoke
-            //swap.Start(); //todo start Siege
+
+            #region - events -
+
+            siege.OnAvaiable += Siege_OnStart;
+            siege.OnOpen += Siege_OnOpen;
+            siege.OnAds += Siege_OnAds;
+            siege.OnEnd += Siege_OnEnd;
+
+            #endregion
+
+            siege.Init();
+
             await repository.RegisterAsync(siege);
         }
 
         public async Task Close(string id) {
             _swap.Close(id);
-            //swap.End(); // todo end Siege
+
             var siege = await repository.GetByIdAsync(id);
             siege.Ended = DateTime.UtcNow;
+
             repository.Update(siege);
         }
 
@@ -56,6 +70,31 @@ namespace papuff.services.Services.Core {
             
             // todo valid user
             _swap.RemoveUser(id, logged);
+            // todo push notification quit
         }
+
+        #region - sockets -
+
+        private async void Siege_OnStart(Siege siege) {
+            await _hub.Clients.All.SendAsync(nameof(Siege_OnStart),
+                JsonConvert.SerializeObject(siege));
+        }
+
+        private async void Siege_OnOpen(Siege siege) {
+            await _hub.Clients.All.SendAsync(nameof(Siege_OnOpen),
+                JsonConvert.SerializeObject(siege));
+        }
+
+        private async void Siege_OnAds(Siege siege) {
+            await _hub.Clients.Group(siege.Id).SendAsync(nameof(Siege_OnAds), 
+                JsonConvert.SerializeObject(siege));
+        }
+
+        private async void Siege_OnEnd(Siege siege) {
+            await _hub.Clients.Group(siege.Id).SendAsync(nameof(Siege_OnEnd),
+                JsonConvert.SerializeObject(siege));
+        }
+
+        #endregion
     }
 }

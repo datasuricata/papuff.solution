@@ -11,9 +11,9 @@ using System.Linq;
 using System.Security.Claims;
 
 namespace papuff.webapi.Controllers.Base {
-    //[Authorize]
     public class BaseController : ControllerBase {
-        #region [ parameters ]
+        
+        #region - parameters -
 
         private IServiceUser ServiceUser =>
             (IServiceUser)HttpContext.RequestServices
@@ -25,7 +25,7 @@ namespace papuff.webapi.Controllers.Base {
 
         #endregion
 
-        #region [ ctor ]
+        #region - ctor -
 
         /// <summary>
         /// ctor
@@ -35,6 +35,8 @@ namespace papuff.webapi.Controllers.Base {
         }
 
         #endregion
+
+        #region - call -
 
         /// <summary>
         /// return new ObjectResponse or message notification
@@ -57,8 +59,9 @@ namespace papuff.webapi.Controllers.Base {
             }
         }
 
+        #endregion
 
-        #region [ user session ]
+        #region - session -
 
         /// <summary>
         /// return user info from current context
@@ -74,7 +77,7 @@ namespace papuff.webapi.Controllers.Base {
 
         #endregion
 
-        #region [ methods ]
+        #region - methods -
 
         /// <summary>
         /// return server info used for request
@@ -90,7 +93,7 @@ namespace papuff.webapi.Controllers.Base {
 
         #endregion
 
-        #region [ components ]
+        #region - components -
 
         protected List<SelectListItem> ToDropDown<T>(IEnumerable<T> list, string text, string value) {
             var dropdown = list.Select(item => new SelectListItem {

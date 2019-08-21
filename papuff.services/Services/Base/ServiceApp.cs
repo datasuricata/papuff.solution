@@ -23,23 +23,17 @@ namespace papuff.services.Services.Base {
 
         public void ValidUpdate<V>(T obj) where V : AbstractValidator<T> {
             Validate(obj, Activator.CreateInstance<V>());
-            //if (!Notifier.HasAny()) {
-                repository.Update(obj);
-            //}
+            repository.Update(obj);
         }
 
         public void ValidManyRegisters<V>(List<T> entities) where V : AbstractValidator<T> {
             ValidateList(entities, Activator.CreateInstance<V>());
-            //if (!Notifier.HasAny()) {
-                repository.RegisterList(entities);
-            //}
+            repository.RegisterList(entities);
         }
 
         public void ValidRegister<V>(T obj) where V : AbstractValidator<T> {
             Validate(obj, Activator.CreateInstance<V>());
-            //if (!Notifier.HasAny()) {
             repository.Register(obj);
-            //}
         }
 
         public void ValidEntity<V>(T obj) where V : AbstractValidator<T> {
@@ -51,15 +45,19 @@ namespace papuff.services.Services.Base {
         #region [ validator ]
 
         private void Validate(T obj, AbstractValidator<T> validator) {
-            if (obj == null)
+            if (obj == null) {
+                Notifier.Add<ServiceBase>("Não validado.");
                 return;
+            }
 
             validator.ValidateAndThrow(obj);
         }
 
         private void ValidateList(List<T> obj, AbstractValidator<T> validator) {
-            if (obj == null)
+            if (obj == null) {
+                Notifier.Add<ServiceBase>("Não validado.");
                 return;
+            }
 
             foreach (var x in obj)
                 validator.ValidateAndThrow(x);

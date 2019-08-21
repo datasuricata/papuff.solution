@@ -1,6 +1,5 @@
 ﻿using Newtonsoft.Json;
 using papuff.domain.Core.Enums;
-using System;
 
 namespace papuff.domain.Arguments.Sieges {
     public class SiegeRequest {
@@ -12,8 +11,7 @@ namespace papuff.domain.Arguments.Sieges {
 
         public double Range { get; set; }
 
-        public DateTime Start { get; set; }
-        public DateTime Available { get; set; }
+        public int Seconds { get; set; }
 
         [JsonIgnore]
         public string OwnerId { get; set; }

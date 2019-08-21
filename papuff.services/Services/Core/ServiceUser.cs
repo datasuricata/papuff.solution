@@ -21,185 +21,185 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace papuff.services.Services.Core {
-	namespace pegabicho.service.Services.Core {
-		public class ServiceUser : ServiceApp<User>, IServiceUser {
-			#region [ attributes ]
+    namespace pegabicho.service.Services.Core {
+        public class ServiceUser : ServiceApp<User>, IServiceUser {
+            #region [ attributes ]
 
-			/// <summary>
-			/// Use this to retrive JWT key from config
-			/// </summary>
-			private readonly IConfiguration _appConf;
+            /// <summary>
+            /// Use this to retrive JWT key from config
+            /// </summary>
+            private readonly IConfiguration _appConf;
 
-			private readonly IRepository<General> _repositoryGeneral;
-			private readonly IRepository<Address> _repositoryAddress;
-			private readonly IRepository<Wallet> _repositoryWallet;
+            private readonly IRepository<General> _repositoryGeneral;
+            private readonly IRepository<Address> _repositoryAddress;
+            private readonly IRepository<Wallet> _repositoryWallet;
 
-			#endregion
+            #endregion
 
-			#region [ ctor ]
+            #region [ ctor ]
 
-			public ServiceUser(IServiceProvider provider,
-			IConfiguration appConf,
-			IRepository<General> repositoryGeneral,
-			IRepository<Address> repositoryAddress,
-			IRepository<Wallet> repositoryWallet) : base(provider) {
-				_appConf = appConf;
-				_repositoryGeneral = repositoryGeneral;
-				_repositoryAddress = repositoryAddress;
-				_repositoryWallet = repositoryWallet;
-			}
+            public ServiceUser(IServiceProvider provider,
+            IConfiguration appConf,
+            IRepository<General> repositoryGeneral,
+            IRepository<Address> repositoryAddress,
+            IRepository<Wallet> repositoryWallet) : base(provider) {
+                _appConf = appConf;
+                _repositoryGeneral = repositoryGeneral;
+                _repositoryAddress = repositoryAddress;
+                _repositoryWallet = repositoryWallet;
+            }
 
-			#endregion
+            #endregion
 
-			#region [ default ]
+            #region [ default ]
 
-			/// <summary>
-			/// Use this to retrive user by identifier
-			/// </summary>
-			/// <param name="id"></param>
-			/// <returns></returns>
-			public User GetMe(string id) {
-				return repository.GetById(id);
-			}
+            /// <summary>
+            /// Use this to retrive user by identifier
+            /// </summary>
+            /// <param name="id"></param>
+            /// <returns></returns>
+            public User GetMe(string id) {
+                return repository.GetById(id);
+            }
 
-			/// <summary>
-			/// Use this to retrive user by login
-			/// </summary>
-			/// <param name="email"></param>
-			/// <returns></returns>
-			public User GetByEmail(string email) {
-				var user = repository.GetBy(m => m.Email
-					.Equals(email, StringComparison.InvariantCultureIgnoreCase));
+            /// <summary>
+            /// Use this to retrive user by login
+            /// </summary>
+            /// <param name="email"></param>
+            /// <returns></returns>
+            public User GetByEmail(string email) {
+                var user = repository.GetBy(m => m.Email
+                    .Equals(email, StringComparison.InvariantCultureIgnoreCase));
 
-				Notifier.When<ServiceUser>(user is null, "Usuário não encontrado.");
-				return user;
-			}
+                Notifier.When<ServiceUser>(user is null, "Usuário não encontrado.");
+                return user;
+            }
 
-			public User GetById(string id) {
-				return repository.GetById(id, i => i.General, i => i.Documents);
-			}
+            public User GetById(string id) {
+                return repository.GetById(id, i => i.General, i => i.Documents);
+            }
 
-			public List<User> ListUsers() {
-				return repository.ListByReadOnly(x => !x.IsDeleted).ToList();
-			}
+            public List<User> ListUsers() {
+                return repository.ListByReadOnly(x => !x.IsDeleted).ToList();
+            }
 
-			#endregion
+            #endregion
 
-			#region [ security ]
+            #region [ security ]
 
-			/// <summary>
-			/// Use this to valid and create a jwt response from parameters request
-			/// </summary>
-			/// <param name="request"></param>
-			/// <returns></returns>
-			public AuthResponse Authenticate(AuthRequest request) {
-				
-				var user = repository
-					.GetByReadOnly(u => u.Email
-						.Equals(request.Email, StringComparison.InvariantCultureIgnoreCase));
+            /// <summary>
+            /// Use this to valid and create a jwt response from parameters request
+            /// </summary>
+            /// <param name="request"></param>
+            /// <returns></returns>
+            public AuthResponse Authenticate(AuthRequest request) {
 
-				Notifier.When<ServiceUser>(user == null,
-					"Usuário não encontrado.");
+                var user = repository
+                    .GetByReadOnly(u => u.Email
+                        .Equals(request.Email, StringComparison.InvariantCultureIgnoreCase));
 
-				Notifier.When<ServiceUser>(user?.Password != request.Password,
-					"Senha não confere, verifique e tente novamente.");
+                Notifier.When<ServiceUser>(user == null,
+                    "Usuário não encontrado.");
 
-				ValidEntity<SecurityValidator>(user);
+                Notifier.When<ServiceUser>(user?.Password != request.Password,
+                    "Senha não confere, verifique e tente novamente.");
 
-				if (!Notifier.IsValid)
-					return null;
+                ValidEntity<SecurityValidator>(user);
 
-				var handler = new JwtSecurityTokenHandler();
-				var key = Encoding.ASCII.GetBytes(_appConf["SecurityKey"]);
+                if (Notifier.IsValid) {
 
-				var payload = new SecurityTokenDescriptor {
-					Subject = new ClaimsIdentity(new[] {
-						new Claim(ClaimTypes.Email, user.Email),
-						new Claim(ClaimTypes.NameIdentifier, user.Id),
-					}),
-					Expires = DateTime.UtcNow.AddHours(3),
-					SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
-						SecurityAlgorithms.HmacSha256Signature),
-					IssuedAt = DateTime.UtcNow,
-				};
+                    var handler = new JwtSecurityTokenHandler();
+                    var key = Encoding.ASCII.GetBytes(_appConf["SecurityKey"]);
 
-				var token = handler.CreateToken(payload);
-				return ((AuthResponse) user).InjectToken(handler.WriteToken(token));
-			}
+                    var payload = new SecurityTokenDescriptor {
+                        Subject = new ClaimsIdentity(new[] {
+                        new Claim(ClaimTypes.Email, user.Email),
+                        new Claim(ClaimTypes.NameIdentifier, user.Id),
+                    }),
+                        Expires = DateTime.UtcNow.AddHours(3),
+                        SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
+                            SecurityAlgorithms.HmacSha256Signature),
+                        IssuedAt = DateTime.UtcNow,
+                    };
 
-			#endregion
+                    var token = handler.CreateToken(payload);
+                    return ((AuthResponse)user).InjectToken(handler.WriteToken(token));
 
-			public async Task Register(UserRequest request) {
-				Notifier.When<ServiceUser>(
-					repository.Exist(u => u.Email.Equals(request.Email, StringComparison.InvariantCultureIgnoreCase)),
-					"Já existe um registro para este e-mail.");
+                }
 
-				Notifier.When<ServiceUser>(
-					repository.Exist(u => u.Nick.Equals(request.Nick, StringComparison.InvariantCultureIgnoreCase)),
-					"Este nick já esta em uso.");
+                return null;
+            }
 
-				if (Notifier.IsValid) {
-					var user = new User(request.Email, request.Password.Encrypt(), request.Nick);
-					ValidEntity<UserValidator>(user);
-					await repository.RegisterAsync(user);
-				}
-			}
+            #endregion
 
-			public async Task General(GeneralRequest request) {
-				var current = _repositoryGeneral.GetBy(u => u.UserId == request.UserId);
+            public async Task Register(UserRequest request) {
+                Notifier.When<ServiceUser>(
+                    repository.Exist(u => u.Email.Equals(request.Email, StringComparison.InvariantCultureIgnoreCase)),
+                    "Já existe um registro para este e-mail.");
 
-				if (current is null) {
-					var general = new General(request.BirthDate, request.Name,
-						request.Description, request.Stage, request.UserId);
+                Notifier.When<ServiceUser>(
+                    repository.Exist(u => u.Nick.Equals(request.Nick, StringComparison.InvariantCultureIgnoreCase)),
+                    "Este nick já esta em uso.");
 
-					new GeneralValidator().Validate(general);
-					await _repositoryGeneral.RegisterAsync(general);
-				}
-				else {
-					current.Update(request.BirthDate, request.Name,
-						request.Description, request.Stage);
+                if (Notifier.IsValid) {
+                    var user = new User(request.Email, request.Password.Encrypt(), request.Nick);
+                    ValidEntity<UserValidator>(user);
+                    await repository.RegisterAsync(user);
+                }
+            }
 
-					_repositoryGeneral.Update(current);
-				}
-			}
+            public async Task General(GeneralRequest request) {
+                var current = _repositoryGeneral.GetBy(u => u.UserId == request.UserId);
 
-			public async Task Address(AddressRequest request) {
-				var current = _repositoryAddress.GetBy(u => u.UserId == request.UserId);
+                if (current is null) {
+                    var general = new General(request.BirthDate, request.Name,
+                        request.Description, request.Stage, request.UserId);
 
-				if (current is null) {
-					var address = new Address(request.Building, request.Number, request.Complement,
-						request.AddressLine, request.District, request.City, request.StateProvince,
-						request.Country, request.PostalCode, request.UserId);
+                    new GeneralValidator().Validate(general);
+                    await _repositoryGeneral.RegisterAsync(general);
+                } else {
+                    current.Update(request.BirthDate, request.Name,
+                        request.Description, request.Stage);
 
-					new AddressValidator().Validate(address);
-					await _repositoryAddress.RegisterAsync(address);
-				}
-				else {
-					current.Update(request.Building, request.Number, request.Complement,
-						request.AddressLine, request.District, request.City, request.StateProvince,
-						request.Country, request.PostalCode);
+                    _repositoryGeneral.Update(current);
+                }
+            }
 
-					_repositoryAddress.Update(current);
-				}
-			}
+            public async Task Address(AddressRequest request) {
+                var current = _repositoryAddress.GetBy(u => u.UserId == request.UserId);
 
-			public async Task Wallet(WalletRequest request) {
-				var current = _repositoryWallet.GetBy(u => u.UserId == request.UserId);
+                if (current is null) {
+                    var address = new Address(request.Building, request.Number, request.Complement,
+                        request.AddressLine, request.District, request.City, request.StateProvince,
+                        request.Country, request.PostalCode, request.UserId);
 
-				if (current is null) {
-					var wallet = new Wallet(request.Type, request.Agency, request.Account,
-						request.Document, request.DateDue, request.IsDefault, request.UserId);
+                    new AddressValidator().Validate(address);
+                    await _repositoryAddress.RegisterAsync(address);
+                } else {
+                    current.Update(request.Building, request.Number, request.Complement,
+                        request.AddressLine, request.District, request.City, request.StateProvince,
+                        request.Country, request.PostalCode);
 
-					new WalletValidator().Validate(wallet);
-					await _repositoryWallet.RegisterAsync(wallet);
-				}
-				else {
-					current.Update(request.Type, request.Agency, request.Account,
-						request.Document, request.DateDue, request.IsDefault);
+                    _repositoryAddress.Update(current);
+                }
+            }
 
-					_repositoryWallet.Update(current);
-				}
-			}
-		}
-	}
+            public async Task Wallet(WalletRequest request) {
+                var current = _repositoryWallet.GetBy(u => u.UserId == request.UserId);
+
+                if (current is null) {
+                    var wallet = new Wallet(request.Type, request.Agency, request.Account,
+                        request.Document, request.DateDue, request.IsDefault, request.UserId);
+
+                    new WalletValidator().Validate(wallet);
+                    await _repositoryWallet.RegisterAsync(wallet);
+                } else {
+                    current.Update(request.Type, request.Agency, request.Account,
+                        request.Document, request.DateDue, request.IsDefault);
+
+                    _repositoryWallet.Update(current);
+                }
+            }
+        }
+    }
 }

@@ -3,11 +3,15 @@ using papuff.domain.Core.Base;
 using papuff.domain.Core.Enums;
 using papuff.domain.Core.Users;
 using System;
+using System.Linq;
+using System.Timers;
 using System.Collections.Generic;
-using System.Threading;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace papuff.domain.Core.Sieges {
     public class Siege : EntityBase {
+
+        #region - handlers -
 
         public delegate void SiegeHandler(Siege siege);
 
@@ -16,27 +20,19 @@ namespace papuff.domain.Core.Sieges {
         public event SiegeHandler OnEnd;
         public event SiegeHandler OnAds;
 
-        private readonly Timer _available;
-        private readonly Timer _ads;
+        #endregion
+
+        #region - threads -
+
+        private Timer _audit;
+        private Timer _available;
+        private Timer _ads;
 
         private readonly object _lock = new object();
 
-        public SiegeStatus Status {
-            get {
-                if (Ended.HasValue)
-                    return SiegeStatus.Closed;
+        #endregion
 
-                var now = DateTime.UtcNow;
-
-                if (now > Start)
-                    return SiegeStatus.Opened;
-
-                if (now > Available)
-                    return SiegeStatus.Available;
-
-                return SiegeStatus.Invisible;
-            }
-        }
+        #region - mapped attributes -
 
         public VisibilityType Visibility { get; set; }
 
@@ -46,38 +42,135 @@ namespace papuff.domain.Core.Sieges {
 
         public double Range { get; set; }
 
-        public DateTime Start { get; set; }
+        public double Latitude { get; set; }
+        public double Longitude { get; set; }
+
         public DateTime Available { get; set; }
+        public DateTime? Start { get; set; }
         public DateTime? Ended { get; set; }
 
         public string OwnerId { get; set; }
         public User Owner { get; set; }
 
+        #endregion
 
+        #region - not mapped attributes -
+
+        [NotMapped]
+        public SiegeStatus Status {
+            get {
+                if (Ended.HasValue)
+                    return SiegeStatus.Closed;
+
+                if (Start.HasValue)
+                    return SiegeStatus.Opened;
+
+                var now = DateTime.UtcNow;
+
+                if (now > Available)
+                    return SiegeStatus.Available;
+
+                return SiegeStatus.Invisible;
+            }
+        }
+
+        [NotMapped]
+        public int TimeOpened {
+            get {
+                if (new[] { SiegeStatus.Closed, SiegeStatus.Opened }
+                .Contains(Status))
+                    return 0;
+
+                var result = Start - DateTime.UtcNow;
+                return (int)result?.TotalMilliseconds;
+            }
+        }
+
+        [NotMapped]
+        public int TimeToAvailable {
+            get {
+                if (new[] { SiegeStatus.Closed, SiegeStatus.Opened, SiegeStatus.Invisible }
+                .Contains(Status))
+                    return 0;
+
+                var result = Available - DateTime.UtcNow;
+                return (int)result.TotalMilliseconds;
+            }
+        }
+
+        [NotMapped]
         public Advertising Advertising { get; set; }
+
+        [NotMapped]
         public List<User> Users { get; set; } = new List<User>();
+
+        #endregion
+
+        #region - ctor -
 
         protected Siege() { }
 
-        public Siege(VisibilityType visibility, string title, string description, string imageUri, double range, DateTime start, DateTime available, string ownerId) {
+        public Siege(VisibilityType visibility, string title, string description, string imageUri, double latitude, double longitude, double range, int seconds, string ownerId) {
             Visibility = visibility;
             Title = title;
             Description = description;
             ImageUri = imageUri;
+            Latitude = latitude;
+            Longitude = longitude;
             Range = range;
-            Start = start;
-            Available = available;
+            Available = DateTime.UtcNow.AddSeconds(seconds);
             OwnerId = ownerId;
         }
 
-        public void Update(VisibilityType visibility, string title, string description, string imageUri, double range, DateTime start, DateTime available) {
-            Visibility = visibility;
-            Title = title;
-            Description = description;
-            ImageUri = imageUri;
-            Range = range;
-            Start = start;
-            Available = available;
+        #endregion
+
+        #region - methods -
+
+        public void Init() {
+            lock (_lock) {
+
+                var avaiable = Available - DateTime.UtcNow;
+                var audit = Available - DateTime.UtcNow.AddDays(1);
+
+                _available = new Timer(avaiable.TotalMilliseconds) { AutoReset = false };
+                _audit = new Timer(audit.TotalMilliseconds) { AutoReset = false };
+
+                _available.Elapsed += Avaiable_Elapsed;
+                _audit.Elapsed += Audit_Elapsed;
+                _available.Start();
+                _audit.Start();
+            }
         }
+
+        public void Open() {
+            lock (_lock) {
+                Start = DateTime.UtcNow;
+                OnOpen?.Invoke(this);
+            }
+        }
+
+        public void End() {
+            lock (_lock) {
+                Ended = DateTime.UtcNow;
+                OnEnd?.Invoke(this);
+            }
+        }
+
+        #endregion
+
+        #region - events -
+
+        private void Avaiable_Elapsed(object sender, ElapsedEventArgs e) {
+            OnAvaiable?.Invoke(this);
+        }
+
+        private void Audit_Elapsed(object sender, ElapsedEventArgs e) {
+            if (Users.Any())
+                Open();
+            else
+                End();
+        }
+
+        #endregion
     }
 }

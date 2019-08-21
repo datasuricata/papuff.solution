@@ -30,14 +30,9 @@ namespace papuff.services.Services.Swap {
             var siege = GetById(id);
 
             lock (_lock) {
-                //siege.Close(); //todo implement close
+                siege.End();
             }
         }
-
-        public void CloseAll() {
-            //Sieges.ForEach(s => s.Close());  todo implement close all
-        }
-
 
         public void ReceiveUser(string id, User user) {
 
@@ -64,7 +59,7 @@ namespace papuff.services.Services.Swap {
 
             lock (_lock) {
                 siege.Advertising = advertising;
-                //siege.PushAds(); todo push ads
+                siege.PushAds(); 
             }
         }
     }

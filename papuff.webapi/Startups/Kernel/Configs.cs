@@ -10,7 +10,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using papuff.webapi.Hubs;
+using papuff.services.Hubs;
 using Swashbuckle.AspNetCore.Swagger;
 using System.Collections.Generic;
 using System.Globalization;

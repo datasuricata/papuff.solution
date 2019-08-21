@@ -15,10 +15,10 @@ namespace papuff.webapi.Controllers {
     [ApiController]
     public class UsersController : BaseController {
 
-        public readonly IServiceUser service;
+        public readonly IServiceUser _service;
 
         public UsersController(IServiceUser service) {
-            this.service = service;
+            _service = service;
         }
 
         [HttpGet("me")]
@@ -28,47 +28,47 @@ namespace papuff.webapi.Controllers {
 
         [HttpGet("byEmail/{email}")]
         public IActionResult ByEmail(string email) {
-            return Result(service.GetByEmail(email));
+            return Result(_service.GetByEmail(email));
         }
 
         [HttpGet("byId/{id}")]
         public IActionResult ById(string id) {
-            return Result(service.GetById(id));
+            return Result(_service.GetById(id));
         }
 
         [HttpGet("all")]
         public IActionResult All() {
-            return Result(service.ListUsers());
+            return Result(_service.ListUsers());
         }
 
         [AllowAnonymous]
         [HttpPost("auth")]
         public IActionResult Auth([FromBody] AuthRequest request) {
-            return Result(service.Authenticate(request));
+            return Result(_service.Authenticate(request));
         }
 
         [AllowAnonymous]
         [HttpPost("register")]
         public async Task<IActionResult> Register([FromBody] UserRequest request) {
-            await service.Register(request);
+            await _service.Register(request);
             return Result(new BaseResponse());
         }
 
         [HttpPost("general")]
         public async Task<IActionResult> General([FromBody] GeneralRequest request) {
-            await service.General(request.InjectAccount(LoggedLess, nameof(request.UserId)));
+            await _service.General(request.InjectAccount(LoggedLess, nameof(request.UserId)));
             return Result(new BaseResponse());
         }
 
         [HttpPost("address")]
         public async Task<IActionResult> Address([FromBody] AddressRequest request) {
-            await service.Address(request.InjectAccount(LoggedLess, nameof(request.UserId)));
+            await _service.Address(request.InjectAccount(LoggedLess, nameof(request.UserId)));
             return Result(new BaseResponse());
         }
 
         [HttpPost("wallet")]
         public async Task<IActionResult> Wallet([FromBody] WalletRequest request) {
-            await service.Wallet(request.InjectAccount(LoggedLess, nameof(request.UserId)));
+            await _service.Wallet(request.InjectAccount(LoggedLess, nameof(request.UserId)));
             return Result(new BaseResponse());
         }
     }
