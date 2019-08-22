@@ -1,4 +1,5 @@
 ﻿using papuff.domain.Core.Base;
+using papuff.domain.Core.Enums;
 using papuff.domain.Core.Generals;
 using System.Collections.Generic;
 
@@ -14,16 +15,20 @@ namespace papuff.domain.Core.Users {
 
         protected User() { }
 
-        public string Email { get; set; }
-        public string Password { get; set; }
-        public string Nick { get; set; }
+        public string Email { get; private set; }
+        public string Password { get; private set; }
+        public string Nick { get; private set; }
 
-        public UserType
+        public UserType Type { get; private set; }
 
         public Address Address { get; set; }
         public General General { get; set; }
 
         public List<Wallet> Wallets { get; set; } = new List<Wallet>();
         public List<Document> Documents { get; set; } = new List<Document>();
+
+        public void SetType(UserType type) {
+            Type = type;
+        }
     }
 }

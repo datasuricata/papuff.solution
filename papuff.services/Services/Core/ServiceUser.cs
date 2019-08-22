@@ -3,6 +3,7 @@ using Microsoft.IdentityModel.Tokens;
 using papuff.domain.Arguments.Generals;
 using papuff.domain.Arguments.Security;
 using papuff.domain.Arguments.Users;
+using papuff.domain.Core.Enums;
 using papuff.domain.Core.Generals;
 using papuff.domain.Core.Users;
 using papuff.domain.Interfaces.Repositories;
@@ -128,7 +129,7 @@ namespace papuff.services.Services.Core {
 
         #region - register -
 
-        public async Task Register(UserRequest request) {
+        public async Task Register(UserRequest request, UserType type) {
             Notifier.When<ServiceUser>(
                 repository.Exist(u => u.Email.Equals(request.Email, StringComparison.InvariantCultureIgnoreCase)),
                 "Já existe um registro para este e-mail.");
@@ -139,6 +140,8 @@ namespace papuff.services.Services.Core {
 
             if (Notifier.IsValid) {
                 var user = new User(request.Email, request.Password.Encrypt(), request.Nick);
+                user.SetType(type);
+
                 ValidEntity<UserValidator>(user);
                 await repository.RegisterAsync(user);
             }

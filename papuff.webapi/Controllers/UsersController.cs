@@ -1,9 +1,11 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using papuff.domain.Arguments.Base;
+using papuff.domain.Arguments.Companies;
 using papuff.domain.Arguments.Generals;
 using papuff.domain.Arguments.Security;
 using papuff.domain.Arguments.Users;
+using papuff.domain.Core.Enums;
 using papuff.domain.Interfaces.Services.Core;
 using papuff.domain.Security;
 using papuff.webapi.Controllers.Base;
@@ -48,9 +50,20 @@ namespace papuff.webapi.Controllers {
         }
 
         [AllowAnonymous]
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] UserRequest request) {
-            await _service.Register(request);
+        [HttpPost("register/customer")]
+        public async Task<IActionResult> Customer([FromBody] UserRequest request) {
+            await _service.Register(request, UserType.Customer);
+            return Result(new BaseResponse());
+        }
+
+        [HttpPost("register/operator")]
+        public async Task<IActionResult> Operator([FromBody] UserRequest request) {
+
+            // todo pass to filter
+            Notifier.When<UsersController>(Logged.Type == UserType.Root, 
+                "Você não possui privilégio.");
+
+            await _service.Register(request, UserType.Operator);
             return Result(new BaseResponse());
         }
 
@@ -71,5 +84,10 @@ namespace papuff.webapi.Controllers {
             await _service.Wallet(request.InjectAccount(LoggedLess, nameof(request.UserId)));
             return Result(new BaseResponse());
         }
+
+        //[HttpPost("company")]
+        //public async Task<IActionResult> Company([FromBody] CompanyRequest request) {
+        //    throw NotImplemented
+        //}
     }
 }

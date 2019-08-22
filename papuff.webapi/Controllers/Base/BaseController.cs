@@ -19,7 +19,7 @@ namespace papuff.webapi.Controllers.Base {
             (IServiceUser)HttpContext.RequestServices
                 .GetService(typeof(IServiceUser));
 
-        private IEventNotifier Notifier =>
+        protected IEventNotifier Notifier =>
             (IEventNotifier)HttpContext.RequestServices
                 .GetService(typeof(IEventNotifier));
 

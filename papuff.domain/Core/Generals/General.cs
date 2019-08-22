@@ -1,5 +1,4 @@
 ﻿using papuff.domain.Core.Base;
-using papuff.domain.Core.Companies;
 using papuff.domain.Core.Enums;
 using papuff.domain.Core.Users;
 using System;
@@ -29,7 +28,7 @@ namespace papuff.domain.Core.Generals {
         public CurrentStage Stage { get; private set; }
         public DateTime BirthDate { get; private set; }
 
-        public string UserId { get; set; }
+        public string UserId { get; private set; }
         public User User { get; set; }
 
         //public string CompanyId { get; set; }
