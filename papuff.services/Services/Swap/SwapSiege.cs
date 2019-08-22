@@ -15,7 +15,7 @@ namespace papuff.services.Services.Swap {
             return Sieges.FirstOrDefault(x => x.Id == id);
         }
 
-        public List<Siege> ListSieges() {
+        public IEnumerable<Siege> ListSieges() {
             return Sieges;
         }
 
@@ -34,32 +34,13 @@ namespace papuff.services.Services.Swap {
             }
         }
 
-        public void ReceiveUser(string id, User user) {
-
-            var siege = GetById(id);
-
-            lock (_lock) {
-                siege.Users.Add(user);
-            }
-        }
-
-        public void RemoveUser(string id, User user) {
-
-            var siege = GetById(id);
-
-            lock (_lock) {
-                siege.Users.Remove(user);
-            }
-        }
-
-
         public void PushAds(string id, Advertising advertising) {
 
             var siege = GetById(id);
 
             lock (_lock) {
                 siege.Advertising = advertising;
-                siege.PushAds(); 
+             //   siege.PushAds(); 
             }
         }
     }

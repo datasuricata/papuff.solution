@@ -5,86 +5,85 @@ using System.Diagnostics;
 using System.Linq;
 
 namespace papuff.domain.Notifications.Events {
+	public sealed class EventNotifier : IEventNotifier {
+		#region [ parameters ]
 
-    public class EventNotifier : IEventNotifier {
+		private readonly Notifier _notifier;
+		private bool _disposed;
 
-        #region [ parameters ]
+		#endregion
 
-        private Notifier Notifier;
-        private bool _disposed;
+		#region [ ctor ]
 
-        #endregion
+		public EventNotifier() => _notifier = new Notifier();
 
-        #region [ ctor ]
+		#endregion
 
-        public EventNotifier() => Notifier = new Notifier();
+		#region [ methods ]
 
-        #endregion
+		// use for fast validations
+		public void When<N>(bool hasError, string message) {
+			if (hasError)
+				_notifier.Notifications
+					.Add(new Notification {
+						Key = typeof(N).Name,
+						Value = message,
+						StatusCode = 400
+					});
+		}
 
-        #region [ methods ]
+		public void Add<N>(string message) => _notifier.Notifications.Add(new Notification
+			{Key = typeof(N).Name, Value = message, StatusCode = 400});
 
-        // use for fast validations
-        public void When<N>(bool hasError, string message) {
-            if (hasError)
-                Notifier.Notifications
-                    .Add(new Notification {
-                        Key = typeof(N).Name,
-                        Value = message,
-                        StatusCode = 400
-                    });
-        }
+		public void AddException<N>(string message, Exception exception = null) {
+			var stack = new StackTrace(exception);
+			var frames = stack.GetFrames();
 
-        public void Add<N>(string message) => Notifier.Notifications.Add(new Notification { Key = typeof(N).Name, Value = message, StatusCode = 400 });
+			var trace = new string[frames.Count()];
 
-        public void AddException<N>(string message, Exception exception = null) {
-            var stack = new StackTrace(exception);
-            var frames = stack.GetFrames();
+			var i = 0;
 
-            string[] trace = new string[frames.Count()];
-            string[] lines;
+			var ex = exception?.InnerException?.InnerException == null
+				? exception?.Message
+				: exception.InnerException.InnerException.Message;
 
-            int i = 0;
+			var lines = ex != null && ex.Contains(Environment.NewLine)
+				? ex.Split(new[] {Environment.NewLine}, StringSplitOptions.None)
+				: new[] {ex};
 
-            string ex = exception.InnerException?.InnerException == null ? exception.Message : exception.InnerException.InnerException.Message;
+			foreach (var x in frames)
+				trace[i++] = $"{i}. ↓ {x.GetMethod().Name}";
 
-            if (ex.Contains(Environment.NewLine))
-                lines = ex.Split(new[] { Environment.NewLine }, StringSplitOptions.None);
-            else
-                lines = new string[] { ex };
+			_notifier.Notifications.Add(new Notification {
+				Key = typeof(N).Name,
+				Value = message,
+				Exception = lines,
+				StatusCode = 500,
+				Call = trace
+			});
+		}
 
-            foreach (var x in frames)
-                trace[i++] = $"{i}. ↓ {x.GetMethod().Name}";
+		public bool IsValid => !_notifier.HasAny;
 
-            Notifier.Notifications.Add(new Notification {
-                Key = typeof(N).Name,
-                Value = message,
-                Exception = lines,
-                StatusCode = 500,
-                Call = trace
-            });
-        }
+		public IEnumerable<Notification> GetNotifications() => _notifier.Notifications.AsEnumerable();
 
-        public bool IsValid => !Notifier.HasAny;
+		#endregion
 
-        public IEnumerable<Notification> GetNotifications() => Notifier.Notifications.AsEnumerable();
+		#region [ dispose ]
 
-        #endregion
+		private void Dispose(bool disposing) {
+			if (!_disposed)
+				if (disposing)
+					_notifier.Notifications.Clear();
 
-        #region [ dispose ]
+			_disposed = true;
+		}
 
-        protected virtual void Dispose(bool disposing) {
-            if (!this._disposed)
-                if (disposing)
-                    Notifier.Notifications.Clear();
+		public void Dispose() {
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
 
-            this._disposed = true;
-        }
-
-        public void Dispose() {
-            Dispose(true);
-            GC.SuppressFinalize(this);
-        }
-
-        #endregion
-    }
+		#endregion
+	}
 }

@@ -8,12 +8,9 @@ namespace papuff.domain.Interfaces.Services.Core {
     public interface IServiceSiege {
 
         Siege GetById(string id);
-        List<Siege> ListSieges();
+        IEnumerable<Siege> ListSieges();
 
         Task Register(SiegeRequest request);
         Task Close(string id);
-
-        Task ReceiveUser(string id, User logged);
-        Task RemoveUser(string id, User logged);
     }
 }

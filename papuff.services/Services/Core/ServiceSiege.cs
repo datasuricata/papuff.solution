@@ -2,7 +2,6 @@
 using Newtonsoft.Json;
 using papuff.domain.Arguments.Sieges;
 using papuff.domain.Core.Sieges;
-using papuff.domain.Core.Users;
 using papuff.domain.Interfaces.Services.Core;
 using papuff.domain.Interfaces.Services.Swap;
 using papuff.services.Hubs;
@@ -25,14 +24,13 @@ namespace papuff.services.Services.Core {
 
         public Siege GetById(string id) => _swap.GetById(id);
 
-        public List<Siege> ListSieges() => _swap.ListSieges();
+        public IEnumerable<Siege> ListSieges() => _swap.ListSieges();
 
         public async Task Register(SiegeRequest request) {
-
             new SiegeValidator().Validate(request);
-
             var siege = new Siege(request.Visibility, request.Title, request.Description,
-                request.ImageUri, request.Range, request.Seconds, request.OwnerId);
+                request.ImageUri, request.Latitude, request.Longitude, 
+                request.Range, request.Seconds, request.OwnerId);
 
             _swap.Add(siege);
 
@@ -52,25 +50,9 @@ namespace papuff.services.Services.Core {
 
         public async Task Close(string id) {
             _swap.Close(id);
-
             var siege = await repository.GetByIdAsync(id);
             siege.Ended = DateTime.UtcNow;
-
             repository.Update(siege);
-        }
-
-        public async Task ReceiveUser(string id, User logged) {
-
-            // todo valid user
-            _swap.ReceiveUser(id, logged);
-            // todo push notification new entry
-        }
-
-        public async Task RemoveUser(string id, User logged) {
-            
-            // todo valid user
-            _swap.RemoveUser(id, logged);
-            // todo push notification quit
         }
 
         #region - sockets -

@@ -67,10 +67,7 @@ namespace papuff.domain.Core.Sieges {
 
                 var now = DateTime.UtcNow;
 
-                if (now > Available)
-                    return SiegeStatus.Available;
-
-                return SiegeStatus.Invisible;
+                return now > Available ? SiegeStatus.Available : SiegeStatus.Invisible;
             }
         }
 
@@ -82,7 +79,11 @@ namespace papuff.domain.Core.Sieges {
                     return 0;
 
                 var result = Start - DateTime.UtcNow;
-                return (int)result?.TotalMilliseconds;
+                
+                if (result?.TotalMilliseconds != null) 
+                    return (int) result?.TotalMilliseconds;
+                
+                return 0;
             }
         }
 
@@ -137,6 +138,7 @@ namespace papuff.domain.Core.Sieges {
 
                 _available.Elapsed += Avaiable_Elapsed;
                 _audit.Elapsed += Audit_Elapsed;
+                
                 _available.Start();
                 _audit.Start();
             }

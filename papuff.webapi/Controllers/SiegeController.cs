@@ -12,8 +12,7 @@ namespace papuff.webapi.Controllers {
     [Authorize]
     [ApiController]
     public class SiegeController : BaseController {
-
-        public readonly IServiceSiege _service;
+        private readonly IServiceSiege _service;
 
         public SiegeController(IServiceSiege service) {
             _service = service;
@@ -32,18 +31,6 @@ namespace papuff.webapi.Controllers {
         [HttpGet("close/{id}")]
         public async Task<IActionResult> Close(string id) {
             await _service.Close(id);
-            return Result(new BaseResponse());
-        }
-
-        [HttpGet("receive/{id}")]
-        public async Task<IActionResult> Receive(string id) {
-            await _service.ReceiveUser(id, Logged);
-            return Result(new BaseResponse());
-        }
-
-        [HttpGet("remove/{id}")]
-        public async Task<IActionResult> Remove(string id) {
-            await _service.ReceiveUser(id, Logged);
             return Result(new BaseResponse());
         }
 

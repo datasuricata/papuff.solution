@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace papuff.services.Services.Base {
     public class ServiceBase : IServiceBase {
 
-        #region [ attributes ]
+        #region - attributes -
 
         private readonly IUnitOfWork _uow;
         
@@ -16,7 +16,7 @@ namespace papuff.services.Services.Base {
         
         #endregion
 
-        #region [ ctor ]
+        #region - ctor -
 
         public ServiceBase(IServiceProvider provider) {
             _uow = (IUnitOfWork)provider.GetService(typeof(IUnitOfWork));
@@ -25,7 +25,7 @@ namespace papuff.services.Services.Base {
 
         #endregion
 
-        #region [ persistence ]
+        #region - persistence -
 
         public async Task Commit() {
             if (!Notifier.IsValid)
