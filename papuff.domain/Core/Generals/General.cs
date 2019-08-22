@@ -32,7 +32,7 @@ namespace papuff.domain.Core.Generals {
         public string UserId { get; set; }
         public User User { get; set; }
 
-        public string CompanyId { get; set; }
-        public Company Company { get; set; }
+        //public string CompanyId { get; set; }
+        //public Company Company { get; set; }
     }
 }

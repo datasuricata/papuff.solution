@@ -14,7 +14,7 @@ using System.Threading.Tasks;
 namespace papuff.datainfra.ORM {
     public class AppDbContext : DbContext {
 
-        #region [ dbset ]
+        #region - dbset -
 
         public DbSet<User> Users { get; set; }
         public DbSet<Address> Addresses { get; set; }
@@ -22,11 +22,11 @@ namespace papuff.datainfra.ORM {
         public DbSet<General> Generals { get; set; }
         public DbSet<Siege> Sieges { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
-        public DbSet<Advertising> Advertisings { get; set; }
-        public DbSet<Favorite> Favorites { get; set; }
-        public DbSet<Company> Companies { get; set; }
+        
+        //public DbSet<Company> Companies { get; set; }
+        //public DbSet<Advertising> Advertisings { get; set; }
+        //public DbSet<Favorite> Favorites { get; set; }
 
-        //// # log
         //public DbSet<LogApp> LogApp { get; set; }
         //public DbSet<LogCore> LogCore { get; set; }
         //public DbSet<LogKernel> LogKernel { get; set; }
@@ -38,7 +38,7 @@ namespace papuff.datainfra.ORM {
         }
 
         protected override void OnModelCreating(ModelBuilder options) {
-            #region [ scheme ]
+            #region - scheme -
 
             options.HasDefaultSchema("Core");
 
@@ -59,7 +59,7 @@ namespace papuff.datainfra.ORM {
 
             #endregion
 
-            #region [ mappings ]
+            #region - mappings -
 
             // # log
             //options.Entity<EntityLog>(new EntityLogMap().Configure);
@@ -77,10 +77,6 @@ namespace papuff.datainfra.ORM {
             base.OnConfiguring(options);
         }
 
-        /// <summary>
-        /// Apply some things on entities during the async commit
-        /// </summary>
-        /// <returns>Override SaveChanges</returns>
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default(CancellationToken)) {
             foreach (var entry in ChangeTracker.Entries().Where(entry =>
             entry.Entity.GetType().GetProperty(nameof(EntityBase.CreatedAt)) != null ||

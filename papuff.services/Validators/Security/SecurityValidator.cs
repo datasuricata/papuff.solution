@@ -8,6 +8,8 @@ namespace papuff.services.Validators.Security {
 
         public SecurityValidator() {
 
+            RuleFor(r => r.Password).NotEmpty().WithMessage("Senha é obrigatória");
+
             RuleFor(r => r.General)
                 .Must(x => new[] { CurrentStage.Aproved, CurrentStage.Pending }.Contains(x.Stage))
                 .WithMessage("Usuário sem acesso, contate o suporte.");

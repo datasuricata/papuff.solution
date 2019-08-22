@@ -20,52 +20,10 @@ namespace papuff.datainfra.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
-            modelBuilder.Entity("papuff.domain.Core.Ads.Advertising", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<string>("ContentUri");
-
-                    b.Property<DateTimeOffset?>("CreatedAt");
-
-                    b.Property<string>("Description");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<string>("RedirectUri");
-
-                    b.Property<string>("Title");
-
-                    b.Property<DateTimeOffset?>("UpdatedAt");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Advertising");
-                });
-
-            modelBuilder.Entity("papuff.domain.Core.Companies.Company", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTimeOffset?>("CreatedAt");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<DateTimeOffset?>("UpdatedAt");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Company");
-                });
-
             modelBuilder.Entity("papuff.domain.Core.Generals.Document", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<string>("CompanyId");
 
                     b.Property<DateTimeOffset?>("CreatedAt");
 
@@ -83,39 +41,9 @@ namespace papuff.datainfra.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompanyId");
-
                     b.HasIndex("UserId");
 
                     b.ToTable("Document");
-                });
-
-            modelBuilder.Entity("papuff.domain.Core.Generals.Favorite", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<DateTimeOffset?>("CreatedAt");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<bool>("Like");
-
-                    b.Property<decimal>("Rate");
-
-                    b.Property<string>("SiegeId");
-
-                    b.Property<DateTimeOffset?>("UpdatedAt");
-
-                    b.Property<string>("UserId");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SiegeId");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Favorite");
                 });
 
             modelBuilder.Entity("papuff.domain.Core.Generals.General", b =>
@@ -124,8 +52,6 @@ namespace papuff.datainfra.Migrations
                         .ValueGeneratedOnAdd();
 
                     b.Property<DateTime>("BirthDate");
-
-                    b.Property<string>("CompanyId");
 
                     b.Property<DateTimeOffset?>("CreatedAt");
 
@@ -143,10 +69,6 @@ namespace papuff.datainfra.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompanyId")
-                        .IsUnique()
-                        .HasFilter("[CompanyId] IS NOT NULL");
-
                     b.HasIndex("UserId")
                         .IsUnique()
                         .HasFilter("[UserId] IS NOT NULL");
@@ -159,13 +81,29 @@ namespace papuff.datainfra.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<string>("AdvertisingId");
+                    b.Property<DateTime>("Available");
 
                     b.Property<DateTimeOffset?>("CreatedAt");
 
+                    b.Property<string>("Description");
+
+                    b.Property<DateTime?>("Ended");
+
+                    b.Property<string>("ImageUri");
+
                     b.Property<bool>("IsDeleted");
 
+                    b.Property<double>("Latitude");
+
+                    b.Property<double>("Longitude");
+
+                    b.Property<string>("OwnerId");
+
                     b.Property<double>("Range");
+
+                    b.Property<DateTime?>("Start");
+
+                    b.Property<string>("Title");
 
                     b.Property<DateTimeOffset?>("UpdatedAt");
 
@@ -173,7 +111,7 @@ namespace papuff.datainfra.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("AdvertisingId");
+                    b.HasIndex("OwnerId");
 
                     b.ToTable("Siege");
                 });
@@ -188,8 +126,6 @@ namespace papuff.datainfra.Migrations
                     b.Property<int>("Building");
 
                     b.Property<string>("City");
-
-                    b.Property<string>("CompanyId");
 
                     b.Property<int>("Complement");
 
@@ -213,10 +149,6 @@ namespace papuff.datainfra.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CompanyId")
-                        .IsUnique()
-                        .HasFilter("[CompanyId] IS NOT NULL");
-
                     b.HasIndex("UserId")
                         .IsUnique()
                         .HasFilter("[UserId] IS NOT NULL");
@@ -239,13 +171,9 @@ namespace papuff.datainfra.Migrations
 
                     b.Property<string>("Password");
 
-                    b.Property<string>("SiegeId");
-
                     b.Property<DateTimeOffset?>("UpdatedAt");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("SiegeId");
 
                     b.ToTable("User");
                 });
@@ -284,32 +212,13 @@ namespace papuff.datainfra.Migrations
 
             modelBuilder.Entity("papuff.domain.Core.Generals.Document", b =>
                 {
-                    b.HasOne("papuff.domain.Core.Companies.Company")
-                        .WithMany("Documents")
-                        .HasForeignKey("CompanyId");
-
                     b.HasOne("papuff.domain.Core.Users.User", "User")
                         .WithMany("Documents")
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("papuff.domain.Core.Generals.Favorite", b =>
-                {
-                    b.HasOne("papuff.domain.Core.Sieges.Siege", "Siege")
-                        .WithMany()
-                        .HasForeignKey("SiegeId");
-
-                    b.HasOne("papuff.domain.Core.Users.User", "User")
-                        .WithMany()
                         .HasForeignKey("UserId");
                 });
 
             modelBuilder.Entity("papuff.domain.Core.Generals.General", b =>
                 {
-                    b.HasOne("papuff.domain.Core.Companies.Company", "Company")
-                        .WithOne("General")
-                        .HasForeignKey("papuff.domain.Core.Generals.General", "CompanyId");
-
                     b.HasOne("papuff.domain.Core.Users.User", "User")
                         .WithOne("General")
                         .HasForeignKey("papuff.domain.Core.Generals.General", "UserId");
@@ -317,27 +226,16 @@ namespace papuff.datainfra.Migrations
 
             modelBuilder.Entity("papuff.domain.Core.Sieges.Siege", b =>
                 {
-                    b.HasOne("papuff.domain.Core.Ads.Advertising", "Advertising")
+                    b.HasOne("papuff.domain.Core.Users.User", "Owner")
                         .WithMany()
-                        .HasForeignKey("AdvertisingId");
+                        .HasForeignKey("OwnerId");
                 });
 
             modelBuilder.Entity("papuff.domain.Core.Users.Address", b =>
                 {
-                    b.HasOne("papuff.domain.Core.Companies.Company", "Company")
-                        .WithOne("Address")
-                        .HasForeignKey("papuff.domain.Core.Users.Address", "CompanyId");
-
                     b.HasOne("papuff.domain.Core.Users.User", "User")
                         .WithOne("Address")
                         .HasForeignKey("papuff.domain.Core.Users.Address", "UserId");
-                });
-
-            modelBuilder.Entity("papuff.domain.Core.Users.User", b =>
-                {
-                    b.HasOne("papuff.domain.Core.Sieges.Siege")
-                        .WithMany("Users")
-                        .HasForeignKey("SiegeId");
                 });
 
             modelBuilder.Entity("papuff.domain.Core.Users.Wallet", b =>

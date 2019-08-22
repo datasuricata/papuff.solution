@@ -1,4 +1,5 @@
 ﻿using papuff.domain.Core.Ads;
+using papuff.domain.Core.Enums;
 using papuff.domain.Core.Sieges;
 using papuff.domain.Core.Users;
 using papuff.domain.Interfaces.Services.Swap;
@@ -19,6 +20,10 @@ namespace papuff.services.Services.Swap {
             return Sieges;
         }
 
+        public IEnumerable<Siege> ListAvaiables() {
+            return Sieges.Where(s => new[] { SiegeStatus.Available, SiegeStatus.Opened }.Contains(s.Status));
+        }
+
         public void Add(Siege siege) {
             lock (_lock) {
                 Sieges.Add(siege);
@@ -34,13 +39,35 @@ namespace papuff.services.Services.Swap {
             }
         }
 
+        public IEnumerable<Siege> CheckIn(IEnumerable<Siege> sieges, User logged) {
+
+            var accessible = sieges.Where(s => !s.Users.Any(u => u.Id == logged.Id) && s.Visibility == VisibilityType.Public);
+
+            lock (_lock) {
+                foreach (var s in accessible) {
+                    s.Users.Add(logged);
+                }
+            }
+
+            return accessible;
+        }
+
+        public void CheckOut(string id, string logged) {
+
+            var siege = GetById(id);
+
+            lock (_lock) {
+                siege.Users.RemoveAll(u => u.Id == logged);
+            }
+        }
+
         public void PushAds(string id, Advertising advertising) {
 
             var siege = GetById(id);
 
             lock (_lock) {
                 siege.Advertising = advertising;
-             //   siege.PushAds(); 
+                //   siege.PushAds(); 
             }
         }
     }

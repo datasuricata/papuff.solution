@@ -5,8 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Specs\" />
-    <Folder Include="Seeder\" />
+    <Compile Remove="Specs\**" />
+    <EmbeddedResource Remove="Specs\**" />
+    <None Remove="Specs\**" />
   </ItemGroup>
 
   <ItemGroup>

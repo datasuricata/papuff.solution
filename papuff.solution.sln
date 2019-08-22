@@ -11,15 +11,15 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "2 - Infrastructure", "2 - I
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "3 - Presentation", "3 - Presentation", "{512BA8AF-58EE-4EF8-9F4D-88CC1771E49B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "papuff.services", "papuff.services\papuff.services.csproj", "{F3CF8DE4-98DF-4B16-AFE9-A1E622F5745A}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "papuff.services", "papuff.services\papuff.services.csproj", "{F3CF8DE4-98DF-4B16-AFE9-A1E622F5745A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "papuff.bootstrap", "papuff.bootstrap\papuff.bootstrap.csproj", "{B85717C8-AEC5-4DDD-A03F-2A0FEB89A5A6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "papuff.bootstrap", "papuff.bootstrap\papuff.bootstrap.csproj", "{B85717C8-AEC5-4DDD-A03F-2A0FEB89A5A6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "papuff.datainfra", "papuff.datainfra\papuff.datainfra.csproj", "{DB338DFA-3086-4FBF-8996-F8938FBC2CCA}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "papuff.datainfra", "papuff.datainfra\papuff.datainfra.csproj", "{DB338DFA-3086-4FBF-8996-F8938FBC2CCA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "papuff.webapi", "papuff.webapi\papuff.webapi.csproj", "{C34EF39E-87DF-42B2-AEB0-4DC25313DECD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "papuff.webapi", "papuff.webapi\papuff.webapi.csproj", "{C34EF39E-87DF-42B2-AEB0-4DC25313DECD}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "papuff.domain", "papuff.domain\papuff.domain.csproj", "{1530E523-85D8-46EF-BCE8-C345E3411361}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "papuff.domain", "papuff.domain\papuff.domain.csproj", "{1530E523-85D8-46EF-BCE8-C345E3411361}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

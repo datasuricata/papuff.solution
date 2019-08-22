@@ -18,6 +18,8 @@ namespace papuff.domain.Core.Users {
         public string Password { get; set; }
         public string Nick { get; set; }
 
+        public UserType
+
         public Address Address { get; set; }
         public General General { get; set; }
 

@@ -30,7 +30,7 @@ namespace papuff.webapi.Controllers {
 
         [HttpGet("close/{id}")]
         public async Task<IActionResult> Close(string id) {
-            await _service.Close(id);
+            await _service.Close(id, LoggedLess);
             return Result(new BaseResponse());
         }
 
@@ -38,6 +38,11 @@ namespace papuff.webapi.Controllers {
         public async Task<IActionResult> Register([FromBody] SiegeRequest request) {
             await _service.Register(request.InjectAccount(LoggedLess, nameof(request.OwnerId)));
             return Result(new BaseResponse());
+        }
+
+        [HttpPost("receive")]
+        public IActionResult Receive([FromBody] LocationRequest request) {
+            return Result(_service.ReceiveEntry(request, Logged));
         }
     }
 }

@@ -11,6 +11,8 @@ namespace papuff.domain.Interfaces.Services.Core {
         IEnumerable<Siege> ListSieges();
 
         Task Register(SiegeRequest request);
-        Task Close(string id);
+        Task Close(string id, string logged);
+
+        IEnumerable<Siege> ReceiveEntry(LocationRequest request, User logged);
     }
 }

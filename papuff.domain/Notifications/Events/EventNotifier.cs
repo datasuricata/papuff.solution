@@ -3,23 +3,24 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace papuff.domain.Notifications.Events {
 	public sealed class EventNotifier : IEventNotifier {
-		#region [ parameters ]
+		#region - parameters -
 
 		private readonly Notifier _notifier;
 		private bool _disposed;
 
 		#endregion
 
-		#region [ ctor ]
+		#region - ctor -
 
 		public EventNotifier() => _notifier = new Notifier();
 
 		#endregion
 
-		#region [ methods ]
+		#region - methods -
 
 		// use for fast validations
 		public void When<N>(bool hasError, string message) {
@@ -32,7 +33,7 @@ namespace papuff.domain.Notifications.Events {
 					});
 		}
 
-		public void Add<N>(string message) => _notifier.Notifications.Add(new Notification
+        public void Add<N>(string message) => _notifier.Notifications.Add(new Notification
 			{Key = typeof(N).Name, Value = message, StatusCode = 400});
 
 		public void AddException<N>(string message, Exception exception = null) {
@@ -69,7 +70,7 @@ namespace papuff.domain.Notifications.Events {
 
 		#endregion
 
-		#region [ dispose ]
+		#region - dispose -
 
 		private void Dispose(bool disposing) {
 			if (!_disposed)

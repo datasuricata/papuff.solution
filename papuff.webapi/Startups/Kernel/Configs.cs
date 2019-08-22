@@ -122,7 +122,7 @@ namespace papuff.webapi.Startups.Kernel {
         }
 
         public static void UserNotifyHub(this IApplicationBuilder app) {
-            app.UseSignalR(route => { route.MapHub<NotifyHub>("/NotifyHub"); });
+             app.UseSignalR(route => { route.MapHub<NotifyHub>("/NotifyHub"); });
         }
 
         public static void UserDevExceptionIfDebug(this IApplicationBuilder app, IHostingEnvironment env) {

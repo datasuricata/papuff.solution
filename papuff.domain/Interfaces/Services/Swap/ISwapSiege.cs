@@ -8,9 +8,13 @@ namespace papuff.domain.Interfaces.Services.Swap {
 
         Siege GetById(string id);
         IEnumerable<Siege> ListSieges();
+        IEnumerable<Siege> ListAvaiables();
 
         void Add(Siege siege);
         void Close(string id);
+
+        IEnumerable<Siege> CheckIn(IEnumerable<Siege> sieges, User logged);
+        void CheckOut(string id, string logged);
 
         void PushAds(string id, Advertising advertising);
     }

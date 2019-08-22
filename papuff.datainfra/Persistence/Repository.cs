@@ -10,13 +10,13 @@ using System.Threading.Tasks;
 
 namespace papuff.datainfra.Persistence {
     public class Repository<T> : IRepository<T> where T : EntityBase {
-        #region [ attributes ]
+        #region - attributes -
 
         private readonly AppDbContext context;
 
         #endregion
 
-        #region [ ctor ]
+        #region - ctor -
 
         public Repository(AppDbContext context) {
             this.context = context;
@@ -24,7 +24,7 @@ namespace papuff.datainfra.Persistence {
 
         #endregion
 
-        #region [ methods ]
+        #region - methods -
 
         public virtual IQueryable<T> GetQueryable() {
             return context.Set<T>();
@@ -110,7 +110,7 @@ namespace papuff.datainfra.Persistence {
 
         #endregion
 
-        #region [ async ]
+        #region - async -
 
         public virtual async Task<T> GetByIdAsync(string id) {
             return await context.Set<T>().FirstOrDefaultAsync(e => e.Id == id);
@@ -128,7 +128,7 @@ namespace papuff.datainfra.Persistence {
 
         #endregion
 
-        #region [ private ]
+        #region - private -
 
         /// <summary>
         /// Realiza include populando o objeto passado por parametro

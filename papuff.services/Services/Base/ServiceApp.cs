@@ -4,6 +4,7 @@ using papuff.domain.Interfaces.Repositories;
 using papuff.domain.Interfaces.Services.Base;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace papuff.services.Services.Base {
@@ -49,8 +50,11 @@ namespace papuff.services.Services.Base {
                 Notifier.Add<ServiceBase>("Não validado.");
                 return;
             }
-
-            validator.ValidateAndThrow(obj);
+            //validator.ValidateAndThrow(obj);
+            validator.Validate(obj).Errors?.Where(f => f != null)
+                .ToList().ForEach(v => {
+                    Notifier.Add<ServiceBase>(v.ErrorMessage);
+                });
         }
 
         private void ValidateList(List<T> obj, AbstractValidator<T> validator) {
@@ -59,8 +63,12 @@ namespace papuff.services.Services.Base {
                 return;
             }
 
-            foreach (var x in obj)
-                validator.ValidateAndThrow(x);
+            foreach (var x in obj) { //validator.ValidateAndThrow(x);
+                validator.Validate(x).Errors?.Where(f => f != null)
+                    .ToList().ForEach(v => {
+                        Notifier.Add<ServiceBase>(v.ErrorMessage);
+                    });
+            }
         }
 
         #endregion

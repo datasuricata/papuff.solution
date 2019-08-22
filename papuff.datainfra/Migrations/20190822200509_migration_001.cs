@@ -3,71 +3,12 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace papuff.datainfra.Migrations
 {
-    public partial class FirsMigration : Migration
+    public partial class migration_001 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.EnsureSchema(
                 name: "Core");
-
-            migrationBuilder.CreateTable(
-                name: "Advertising",
-                schema: "Core",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(nullable: true),
-                    UpdatedAt = table.Column<DateTimeOffset>(nullable: true),
-                    IsDeleted = table.Column<bool>(nullable: false),
-                    Title = table.Column<string>(nullable: true),
-                    Description = table.Column<string>(nullable: true),
-                    ContentUri = table.Column<string>(nullable: true),
-                    RedirectUri = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Advertising", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Company",
-                schema: "Core",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(nullable: true),
-                    UpdatedAt = table.Column<DateTimeOffset>(nullable: true),
-                    IsDeleted = table.Column<bool>(nullable: false)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Company", x => x.Id);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Siege",
-                schema: "Core",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(nullable: true),
-                    UpdatedAt = table.Column<DateTimeOffset>(nullable: true),
-                    IsDeleted = table.Column<bool>(nullable: false),
-                    Visibility = table.Column<int>(nullable: false),
-                    Range = table.Column<double>(nullable: false),
-                    AdvertisingId = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Siege", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Siege_Advertising_AdvertisingId",
-                        column: x => x.AdvertisingId,
-                        principalSchema: "Core",
-                        principalTable: "Advertising",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
 
             migrationBuilder.CreateTable(
                 name: "User",
@@ -80,19 +21,11 @@ namespace papuff.datainfra.Migrations
                     IsDeleted = table.Column<bool>(nullable: false),
                     Email = table.Column<string>(nullable: true),
                     Password = table.Column<string>(nullable: true),
-                    Nick = table.Column<string>(nullable: true),
-                    SiegeId = table.Column<string>(nullable: true)
+                    Nick = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_User", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_User_Siege_SiegeId",
-                        column: x => x.SiegeId,
-                        principalSchema: "Core",
-                        principalTable: "Siege",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
@@ -113,19 +46,11 @@ namespace papuff.datainfra.Migrations
                     StateProvince = table.Column<string>(nullable: true),
                     Country = table.Column<string>(nullable: true),
                     PostalCode = table.Column<string>(nullable: true),
-                    UserId = table.Column<string>(nullable: true),
-                    CompanyId = table.Column<string>(nullable: true)
+                    UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Address", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Address_Company_CompanyId",
-                        column: x => x.CompanyId,
-                        principalSchema: "Core",
-                        principalTable: "Company",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_Address_User_UserId",
                         column: x => x.UserId,
@@ -147,54 +72,13 @@ namespace papuff.datainfra.Migrations
                     Value = table.Column<string>(nullable: true),
                     ImageUri = table.Column<string>(nullable: true),
                     Type = table.Column<int>(nullable: false),
-                    UserId = table.Column<string>(nullable: true),
-                    CompanyId = table.Column<string>(nullable: true)
+                    UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Document", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Document_Company_CompanyId",
-                        column: x => x.CompanyId,
-                        principalSchema: "Core",
-                        principalTable: "Company",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_Document_User_UserId",
-                        column: x => x.UserId,
-                        principalSchema: "Core",
-                        principalTable: "User",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                });
-
-            migrationBuilder.CreateTable(
-                name: "Favorite",
-                schema: "Core",
-                columns: table => new
-                {
-                    Id = table.Column<string>(nullable: false),
-                    CreatedAt = table.Column<DateTimeOffset>(nullable: true),
-                    UpdatedAt = table.Column<DateTimeOffset>(nullable: true),
-                    IsDeleted = table.Column<bool>(nullable: false),
-                    Like = table.Column<bool>(nullable: false),
-                    Rate = table.Column<decimal>(nullable: false),
-                    SiegeId = table.Column<string>(nullable: true),
-                    UserId = table.Column<string>(nullable: true)
-                },
-                constraints: table =>
-                {
-                    table.PrimaryKey("PK_Favorite", x => x.Id);
-                    table.ForeignKey(
-                        name: "FK_Favorite_Siege_SiegeId",
-                        column: x => x.SiegeId,
-                        principalSchema: "Core",
-                        principalTable: "Siege",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
-                        name: "FK_Favorite_User_UserId",
                         column: x => x.UserId,
                         principalSchema: "Core",
                         principalTable: "User",
@@ -211,26 +95,51 @@ namespace papuff.datainfra.Migrations
                     CreatedAt = table.Column<DateTimeOffset>(nullable: true),
                     UpdatedAt = table.Column<DateTimeOffset>(nullable: true),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    BirthDate = table.Column<string>(nullable: true),
                     Name = table.Column<string>(nullable: true),
                     Description = table.Column<string>(nullable: true),
                     Stage = table.Column<int>(nullable: false),
-                    UserId = table.Column<string>(nullable: true),
-                    CompanyId = table.Column<string>(nullable: true)
+                    BirthDate = table.Column<DateTime>(nullable: false),
+                    UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_General", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_General_Company_CompanyId",
-                        column: x => x.CompanyId,
-                        principalSchema: "Core",
-                        principalTable: "Company",
-                        principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
-                    table.ForeignKey(
                         name: "FK_General_User_UserId",
                         column: x => x.UserId,
+                        principalSchema: "Core",
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Siege",
+                schema: "Core",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(nullable: true),
+                    UpdatedAt = table.Column<DateTimeOffset>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    Visibility = table.Column<int>(nullable: false),
+                    Title = table.Column<string>(nullable: true),
+                    Description = table.Column<string>(nullable: true),
+                    ImageUri = table.Column<string>(nullable: true),
+                    Range = table.Column<double>(nullable: false),
+                    Latitude = table.Column<double>(nullable: false),
+                    Longitude = table.Column<double>(nullable: false),
+                    Available = table.Column<DateTime>(nullable: false),
+                    Start = table.Column<DateTime>(nullable: true),
+                    Ended = table.Column<DateTime>(nullable: true),
+                    OwnerId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Siege", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Siege_User_OwnerId",
+                        column: x => x.OwnerId,
                         principalSchema: "Core",
                         principalTable: "User",
                         principalColumn: "Id",
@@ -267,14 +176,6 @@ namespace papuff.datainfra.Migrations
                 });
 
             migrationBuilder.CreateIndex(
-                name: "IX_Address_CompanyId",
-                schema: "Core",
-                table: "Address",
-                column: "CompanyId",
-                unique: true,
-                filter: "[CompanyId] IS NOT NULL");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Address_UserId",
                 schema: "Core",
                 table: "Address",
@@ -283,36 +184,10 @@ namespace papuff.datainfra.Migrations
                 filter: "[UserId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Document_CompanyId",
-                schema: "Core",
-                table: "Document",
-                column: "CompanyId");
-
-            migrationBuilder.CreateIndex(
                 name: "IX_Document_UserId",
                 schema: "Core",
                 table: "Document",
                 column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Favorite_SiegeId",
-                schema: "Core",
-                table: "Favorite",
-                column: "SiegeId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Favorite_UserId",
-                schema: "Core",
-                table: "Favorite",
-                column: "UserId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_General_CompanyId",
-                schema: "Core",
-                table: "General",
-                column: "CompanyId",
-                unique: true,
-                filter: "[CompanyId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
                 name: "IX_General_UserId",
@@ -323,16 +198,10 @@ namespace papuff.datainfra.Migrations
                 filter: "[UserId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Siege_AdvertisingId",
+                name: "IX_Siege_OwnerId",
                 schema: "Core",
                 table: "Siege",
-                column: "AdvertisingId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_User_SiegeId",
-                schema: "Core",
-                table: "User",
-                column: "SiegeId");
+                column: "OwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Wallet_UserId",
@@ -352,23 +221,7 @@ namespace papuff.datainfra.Migrations
                 schema: "Core");
 
             migrationBuilder.DropTable(
-                name: "Favorite",
-                schema: "Core");
-
-            migrationBuilder.DropTable(
                 name: "General",
-                schema: "Core");
-
-            migrationBuilder.DropTable(
-                name: "Wallet",
-                schema: "Core");
-
-            migrationBuilder.DropTable(
-                name: "Company",
-                schema: "Core");
-
-            migrationBuilder.DropTable(
-                name: "User",
                 schema: "Core");
 
             migrationBuilder.DropTable(
@@ -376,7 +229,11 @@ namespace papuff.datainfra.Migrations
                 schema: "Core");
 
             migrationBuilder.DropTable(
-                name: "Advertising",
+                name: "Wallet",
+                schema: "Core");
+
+            migrationBuilder.DropTable(
+                name: "User",
                 schema: "Core");
         }
     }

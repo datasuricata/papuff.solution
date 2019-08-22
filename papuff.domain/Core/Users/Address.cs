@@ -1,5 +1,4 @@
 ﻿using papuff.domain.Core.Base;
-using papuff.domain.Core.Companies;
 using papuff.domain.Core.Enums;
 
 namespace papuff.domain.Core.Users {
@@ -47,7 +46,7 @@ namespace papuff.domain.Core.Users {
         public string UserId { get; set; }
         public User User { get; set; }
 
-        public string CompanyId { get; set; }
-        public Company Company { get; set; }
+        //public string CompanyId { get; set; }
+        //public Company Company { get; set; }
     }
 }
