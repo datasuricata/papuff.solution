@@ -1,4 +1,5 @@
 ﻿using papuff.domain.Core.Base;
+using papuff.domain.Core.Companies;
 using papuff.domain.Core.Enums;
 using papuff.domain.Core.Generals;
 using System.Collections.Generic;
@@ -25,6 +26,7 @@ namespace papuff.domain.Core.Users {
         public General General { get; set; }
 
         public List<Wallet> Wallets { get; set; } = new List<Wallet>();
+        public List<Company> Companies { get; set; } = new List<Company>();
         public List<Document> Documents { get; set; } = new List<Document>();
 
         public void SetType(UserType type) {

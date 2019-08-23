@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.SignalR;
 using Newtonsoft.Json;
+using papuff.domain.Arguments.Companies;
 using papuff.domain.Arguments.Sieges;
 using papuff.domain.Core.Enums;
 using papuff.domain.Core.Sieges;
@@ -9,6 +10,7 @@ using papuff.domain.Interfaces.Services.Core;
 using papuff.domain.Interfaces.Services.Swap;
 using papuff.services.Hubs;
 using papuff.services.Services.Base;
+using papuff.services.Validators.Core.Companies;
 using papuff.services.Validators.Core.Sieges;
 using System;
 using System.Collections.Generic;
@@ -38,56 +40,70 @@ namespace papuff.services.Services.Core {
 
         public IEnumerable<Siege> ListSieges() => _swap.ListSieges();
 
-        public async Task Register(SiegeRequest request) {
-            new SiegeValidator().Validate(request);
-            var siege = new Siege(request.Visibility, request.Title, request.Description,
-                request.ImageUri, request.Latitude, request.Longitude,
-                request.Range, request.Seconds, request.OwnerId);
-
-            _swap.Add(siege);
-
-            #region - events -
-
-            siege.OnAvaiable += Siege_OnStart;
-            siege.OnOpen += Siege_OnOpen;
-            siege.OnAds += Siege_OnAds;
-            siege.OnEnd += Siege_OnEnd;
-
-            #endregion
-
-            siege.Init();
-
-            await repository.RegisterAsync(siege);
-        }
-
-        public async Task Close(string id, string logged) {
-
-            var siege = await repository.GetByIdAsync(id);
-            Notifier.When<ServiceSiege>(siege.OwnerId != logged, 
-                "Somente o proprietário pode fechar o grupo");
-
-            if (Notifier.IsValid) {
-                siege.Ended = DateTime.UtcNow;
-                _swap.Close(id);
-                repository.Update(siege);
-            }
-        }
-
         public IEnumerable<Siege> ReceiveEntry(LocationRequest request, User logged) {
-
             var sieges = _swap.ListAvaiables()
                 .Where(s => new Coordinate(s.Latitude, s.Longitude)
                 .DistanceTo(new Coordinate(request.Latitude, request.Longitude)) <= s.Range);
 
             if (sieges.Any()) {
                 Notifier.When<ServiceSiege>(new[] { CurrentStage.Recused, CurrentStage.Blocked }.Contains(logged.General.Stage),
-                 "Existe pendencias em, entre em contato com o suporte.");
+                 "Entre em contato com o suporte para resolver pendencias com seu login.");
 
                 if (Notifier.IsValid)
                     return _swap.CheckIn(sieges, logged);
             }
 
             return null;
+        }
+
+        public async Task Register(SiegeRequest request) {
+            new SiegeValidator().Validate(request);
+
+            var siege = new Siege(request.Visibility, request.Title, request.Description,
+                request.ImageUri, request.Latitude, request.Longitude,
+                request.Range, request.Seconds, request.OwnerId);
+
+            if (Notifier.IsValid) {
+                _swap.Add(siege);
+
+                #region - events -
+
+                siege.OnAvaiable += Siege_OnStart;
+                siege.OnOpen += Siege_OnOpen;
+                siege.OnAds += Siege_OnAds;
+                siege.OnEnd += Siege_OnEnd;
+
+                #endregion
+
+                siege.Init();
+
+                await repository.RegisterAsync(siege);
+            }
+        }
+
+        public async Task Close(string id, string logged) {
+            var siege = await repository.GetByIdAsync(id);
+            Notifier.When<ServiceSiege>(siege.OwnerId != logged,
+                "Somente o proprietário pode fechar o grupo");
+
+            if (Notifier.IsValid) {
+                _swap.Close(id);
+                _swap.Sync(id, siege);
+                repository.Update(siege);
+            }
+        }
+
+        public void ReceiveAds(AdsRequest request) {
+            Notifier.When<ServiceSiege>(_swap.IsOwner(request.SiegeId, request.OwnerId),
+                "Somente o proprietário pode criar uma propaganda.");
+
+            var ads = new Advertising(request.Title, request.Description,
+                    request.ContentUri, request.RedirectUri);
+
+            new AdsValidator().Validate(ads);
+
+            if (Notifier.IsValid)
+                _swap.PushAds(request.SiegeId, ads);
         }
 
         #region - sockets -

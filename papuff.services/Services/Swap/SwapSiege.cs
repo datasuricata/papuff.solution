@@ -1,5 +1,4 @@
-﻿using papuff.domain.Core.Ads;
-using papuff.domain.Core.Enums;
+﻿using papuff.domain.Core.Enums;
 using papuff.domain.Core.Sieges;
 using papuff.domain.Core.Users;
 using papuff.domain.Interfaces.Services.Swap;
@@ -35,8 +34,21 @@ namespace papuff.services.Services.Swap {
             var siege = GetById(id);
 
             lock (_lock) {
-                siege.End();
+                siege.End(true);
             }
+        }
+
+        public void Sync(string id, Siege entity) {
+
+            var siege = GetById(id);
+
+            lock (_lock) {
+                entity.Sync(siege);
+            }
+        }
+
+        public bool IsOwner(string id, string OwnerId) {
+            return Sieges.Exists(s => s.Id == id && s.OwnerId == OwnerId);
         }
 
         public IEnumerable<Siege> CheckIn(IEnumerable<Siege> sieges, User logged) {
@@ -67,7 +79,7 @@ namespace papuff.services.Services.Swap {
 
             lock (_lock) {
                 siege.Advertising = advertising;
-                //   siege.PushAds(); 
+                siege.Push(true);
             }
         }
     }

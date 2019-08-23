@@ -1,12 +1,11 @@
-﻿using papuff.domain.Core.Ads;
-using papuff.domain.Core.Base;
+﻿using papuff.domain.Core.Base;
 using papuff.domain.Core.Enums;
 using papuff.domain.Core.Users;
 using System;
-using System.Linq;
-using System.Timers;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Timers;
 
 namespace papuff.domain.Core.Sieges {
     public class Siege : EntityBase {
@@ -34,20 +33,21 @@ namespace papuff.domain.Core.Sieges {
 
         #region - mapped attributes -
 
-        public VisibilityType Visibility { get; set; }
+        public VisibilityType Visibility { get; private set; }
 
-        public string Title { get; set; }
-        public string Description { get; set; }
-        public string ImageUri { get; set; }
+        public string Title { get; private set; }
+        public string Description { get; private set; }
+        public string ImageUri { get; private set; }
 
-        public double Range { get; set; }
+        public double Range { get; private set; }
+        public double Latitude { get; private set; }
+        public double Longitude { get; private set; }
 
-        public double Latitude { get; set; }
-        public double Longitude { get; set; }
+        public int Ads { get; private set; }
 
-        public DateTime Available { get; set; }
-        public DateTime? Start { get; set; }
-        public DateTime? Ended { get; set; }
+        public DateTime Available { get; private set; }
+        public DateTime? Start { get; private set; }
+        public DateTime? Ended { get; private set; }
 
         public string OwnerId { get; set; }
         public User Owner { get; set; }
@@ -79,10 +79,10 @@ namespace papuff.domain.Core.Sieges {
                     return 0;
 
                 var result = Start - DateTime.UtcNow;
-                
-                if (result?.TotalMilliseconds != null) 
-                    return (int) result?.TotalMilliseconds;
-                
+
+                if (result?.TotalMilliseconds != null)
+                    return (int)result?.TotalMilliseconds;
+
                 return 0;
             }
         }
@@ -138,24 +138,55 @@ namespace papuff.domain.Core.Sieges {
 
                 _available.Elapsed += Avaiable_Elapsed;
                 _audit.Elapsed += Audit_Elapsed;
-                
+
                 _available.Start();
                 _audit.Start();
             }
         }
 
-        public void Open() {
+        public void Open(bool invoke) {
             lock (_lock) {
                 Start = DateTime.UtcNow;
-                OnOpen?.Invoke(this);
+
+                if (invoke)
+                    OnOpen?.Invoke(this);
             }
         }
 
-        public void End() {
+        public void Push(bool invoke) {
+
+            _ads = new Timer(new TimeSpan(0, 0, 20).TotalMilliseconds) { AutoReset = false };
+            _ads.Elapsed += Ads_Elapsed;
+            _ads.Start();
+
+            lock (_lock) {
+                Ads++;
+
+                if (invoke)
+                    OnAds?.Invoke(this);
+            }
+        }
+
+        public void End(bool invoke) {
             lock (_lock) {
                 Ended = DateTime.UtcNow;
-                OnEnd?.Invoke(this);
+
+                if (invoke)
+                    OnEnd?.Invoke(this);
             }
+        }
+
+        public void Sync(Siege siege) {
+
+            Visibility = siege.Visibility;
+            Title = siege.Title;
+            Description = siege.Description;
+            ImageUri = siege.ImageUri;
+            Range = siege.Range;
+            Ads = siege.Ads;
+            Available = siege.Available;
+            Start = siege.Start;
+            Ended = siege.Ended;
         }
 
         #endregion
@@ -168,9 +199,16 @@ namespace papuff.domain.Core.Sieges {
 
         private void Audit_Elapsed(object sender, ElapsedEventArgs e) {
             if (Users.Any())
-                Open();
+                Open(true);
             else
-                End();
+                End(true);
+        }
+
+        private void Ads_Elapsed(object sender, ElapsedEventArgs e) {
+            Advertising = null;
+
+            _ads.Close();
+            _ads.Dispose();
         }
 
         #endregion

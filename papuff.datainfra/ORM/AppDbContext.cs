@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using papuff.domain.Core.Ads;
 using papuff.domain.Core.Base;
 using papuff.domain.Core.Companies;
 using papuff.domain.Core.Generals;
@@ -22,8 +21,8 @@ namespace papuff.datainfra.ORM {
         public DbSet<General> Generals { get; set; }
         public DbSet<Siege> Sieges { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
-        
-        //public DbSet<Company> Companies { get; set; }
+        public DbSet<Company> Companies { get; set; }
+
         //public DbSet<Advertising> Advertisings { get; set; }
         //public DbSet<Favorite> Favorites { get; set; }
 

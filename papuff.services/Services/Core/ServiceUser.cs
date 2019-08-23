@@ -79,7 +79,7 @@ namespace papuff.services.Services.Core {
             return repository.GetById(id, i => i.General, i => i.Documents);
         }
 
-        public List<User> ListUsers() {
+        public IEnumerable<User> ListUsers() {
             return repository.ListByReadOnly(x => !x.IsDeleted).ToList();
         }
 

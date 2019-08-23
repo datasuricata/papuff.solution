@@ -13,7 +13,7 @@ namespace papuff.domain.Interfaces.Services.Core {
         User GetByEmail(string email);
         User GetById(string id);
 
-        List<User> ListUsers();
+        IEnumerable<User> ListUsers();
 
         AuthResponse Authenticate(AuthRequest request);
 
