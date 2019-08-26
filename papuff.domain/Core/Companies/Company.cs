@@ -1,6 +1,7 @@
 ﻿using papuff.domain.Core.Base;
 using papuff.domain.Core.Users;
 using System;
+using System.Threading.Tasks;
 
 namespace papuff.domain.Core.Companies {
     public class Company : EntityBase {

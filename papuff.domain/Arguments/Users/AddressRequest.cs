@@ -4,6 +4,9 @@ using papuff.domain.Core.Enums;
 namespace papuff.domain.Arguments.Users {
     public class AddressRequest {
 
+        public string Id { get; set; }
+        public string CompanyId { get; set; }
+
         public BuildingType Building { get; set; }
 
         public int Number { get; set; }

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace papuff.datainfra.Migrations
 {
-    public partial class migration_001 : Migration
+    public partial class migration_000001 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -21,7 +21,8 @@ namespace papuff.datainfra.Migrations
                     IsDeleted = table.Column<bool>(nullable: false),
                     Email = table.Column<string>(nullable: true),
                     Password = table.Column<string>(nullable: true),
-                    Nick = table.Column<string>(nullable: true)
+                    Nick = table.Column<string>(nullable: true),
+                    Type = table.Column<int>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -29,7 +30,7 @@ namespace papuff.datainfra.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Address",
+                name: "Company",
                 schema: "Core",
                 columns: table => new
                 {
@@ -37,22 +38,20 @@ namespace papuff.datainfra.Migrations
                     CreatedAt = table.Column<DateTimeOffset>(nullable: true),
                     UpdatedAt = table.Column<DateTimeOffset>(nullable: true),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    Building = table.Column<int>(nullable: false),
-                    Number = table.Column<int>(nullable: false),
-                    Complement = table.Column<int>(nullable: false),
-                    AddressLine = table.Column<string>(nullable: true),
-                    District = table.Column<string>(nullable: true),
-                    City = table.Column<string>(nullable: true),
-                    StateProvince = table.Column<string>(nullable: true),
-                    Country = table.Column<string>(nullable: true),
-                    PostalCode = table.Column<string>(nullable: true),
+                    Name = table.Column<string>(nullable: true),
+                    Email = table.Column<string>(nullable: true),
+                    SiteUri = table.Column<string>(nullable: true),
+                    CNPJ = table.Column<string>(nullable: true),
+                    Tell = table.Column<string>(nullable: true),
+                    Registration = table.Column<string>(nullable: true),
+                    OpeningDate = table.Column<DateTime>(nullable: false),
                     UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Address", x => x.Id);
+                    table.PrimaryKey("PK_Company", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Address_User_UserId",
+                        name: "FK_Company_User_UserId",
                         column: x => x.UserId,
                         principalSchema: "Core",
                         principalTable: "User",
@@ -129,6 +128,7 @@ namespace papuff.datainfra.Migrations
                     Range = table.Column<double>(nullable: false),
                     Latitude = table.Column<double>(nullable: false),
                     Longitude = table.Column<double>(nullable: false),
+                    Ads = table.Column<int>(nullable: false),
                     Available = table.Column<DateTime>(nullable: false),
                     Start = table.Column<DateTime>(nullable: true),
                     Ended = table.Column<DateTime>(nullable: true),
@@ -175,6 +175,54 @@ namespace papuff.datainfra.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Address",
+                schema: "Core",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(nullable: true),
+                    UpdatedAt = table.Column<DateTimeOffset>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    Building = table.Column<int>(nullable: false),
+                    Number = table.Column<int>(nullable: false),
+                    Complement = table.Column<int>(nullable: false),
+                    AddressLine = table.Column<string>(nullable: true),
+                    District = table.Column<string>(nullable: true),
+                    City = table.Column<string>(nullable: true),
+                    StateProvince = table.Column<string>(nullable: true),
+                    Country = table.Column<string>(nullable: true),
+                    PostalCode = table.Column<string>(nullable: true),
+                    UserId = table.Column<string>(nullable: true),
+                    CompanyId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Address", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Address_Company_CompanyId",
+                        column: x => x.CompanyId,
+                        principalSchema: "Core",
+                        principalTable: "Company",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Address_User_UserId",
+                        column: x => x.UserId,
+                        principalSchema: "Core",
+                        principalTable: "User",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Address_CompanyId",
+                schema: "Core",
+                table: "Address",
+                column: "CompanyId",
+                unique: true,
+                filter: "[CompanyId] IS NOT NULL");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Address_UserId",
                 schema: "Core",
@@ -182,6 +230,12 @@ namespace papuff.datainfra.Migrations
                 column: "UserId",
                 unique: true,
                 filter: "[UserId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Company_UserId",
+                schema: "Core",
+                table: "Company",
+                column: "UserId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Document_UserId",
@@ -230,6 +284,10 @@ namespace papuff.datainfra.Migrations
 
             migrationBuilder.DropTable(
                 name: "Wallet",
+                schema: "Core");
+
+            migrationBuilder.DropTable(
+                name: "Company",
                 schema: "Core");
 
             migrationBuilder.DropTable(

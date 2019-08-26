@@ -2,6 +2,10 @@
 
 namespace papuff.domain.Core.Enums {
     public enum BuildingType {
+
+        [Display(Description = "Sem Definição")]
+        Undefined = 0,
+
         [Display(Description = "Casa")]
         House = 1,
 

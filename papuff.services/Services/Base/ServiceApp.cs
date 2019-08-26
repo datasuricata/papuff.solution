@@ -12,10 +12,10 @@ namespace papuff.services.Services.Base {
 
         #region [ attributes ]
 
-        protected readonly IRepository<T> repository;
+        protected readonly IRepository<T> _repository;
 
         public ServiceApp(IServiceProvider provider) : base(provider) {
-            this.repository = (IRepository<T>)provider.GetService(typeof(IRepository<T>));
+            _repository = (IRepository<T>)provider.GetService(typeof(IRepository<T>));
         }
 
         #endregion
@@ -24,17 +24,17 @@ namespace papuff.services.Services.Base {
 
         public void ValidUpdate<V>(T obj) where V : AbstractValidator<T> {
             Validate(obj, Activator.CreateInstance<V>());
-            repository.Update(obj);
+            _repository.Update(obj);
         }
 
         public void ValidManyRegisters<V>(List<T> entities) where V : AbstractValidator<T> {
             ValidateList(entities, Activator.CreateInstance<V>());
-            repository.RegisterList(entities);
+            _repository.RegisterList(entities);
         }
 
         public void ValidRegister<V>(T obj) where V : AbstractValidator<T> {
             Validate(obj, Activator.CreateInstance<V>());
-            repository.Register(obj);
+            _repository.Register(obj);
         }
 
         public void ValidEntity<V>(T obj) where V : AbstractValidator<T> {

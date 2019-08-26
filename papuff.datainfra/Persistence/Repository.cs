@@ -30,45 +30,39 @@ namespace papuff.datainfra.Persistence {
             return context.Set<T>();
         }
 
-        public virtual IQueryable<T> ListBy(Expression<Func<T, bool>> where, params Expression<Func<T, object>>[] includeProperties) {
-            return List(includeProperties).Where(where);
+        public virtual IQueryable<T> ListBy(bool readOnly, Expression<Func<T, bool>> where, params Expression<Func<T, object>>[] includeProperties) {
+            return List(readOnly, includeProperties).Where(where).AsNoTracking();
         }
 
-        public virtual IQueryable<T> ListByReadOnly(Expression<Func<T, bool>> where, params Expression<Func<T, object>>[] includeProperties) {
-            return List(includeProperties).Where(where).AsNoTracking();
+        public virtual IQueryable<T> GetOrderBy<TKey>(bool readOnly, Expression<Func<T, bool>> where, Expression<Func<T, TKey>> ordem, bool ascendente = true, params Expression<Func<T, object>>[] includeProperties) {
+            return ascendente ? ListBy(readOnly, where, includeProperties).OrderBy(ordem) : ListBy(readOnly, where, includeProperties).OrderByDescending(ordem);
         }
 
-        public virtual IQueryable<T> GetOrderBy<TKey>(Expression<Func<T, bool>> where, Expression<Func<T, TKey>> ordem, bool ascendente = true, params Expression<Func<T, object>>[] includeProperties) {
-            return ascendente ? ListBy(where, includeProperties).OrderBy(ordem) : ListBy(where, includeProperties).OrderByDescending(ordem);
+        public virtual T GetBy(bool readOnly, Expression<Func<T, bool>> where, params Expression<Func<T, object>>[] includeProperties) {
+            return ListBy(readOnly, where, includeProperties).AsNoTracking().FirstOrDefault(where);
         }
 
-        public virtual T GetBy(Func<T, bool> where, params Expression<Func<T, object>>[] includeProperties) {
-            return List(includeProperties).FirstOrDefault(where);
+        public virtual T GetById(bool readOnly, string id, params Expression<Func<T, object>>[] includeProperties) {
+            return List(readOnly, includeProperties).FirstOrDefault(c => c.Id == id);
+            //if (includeProperties.Any())
+            //    return List(includeProperties).FirstOrDefault(x => x.Id == id);
+            //return context.Set<T>().Find(id);
         }
 
-        public virtual T GetByReadOnly(Func<T, bool> where, params Expression<Func<T, object>>[] includeProperties) {
-            return List(includeProperties).AsNoTracking().FirstOrDefault(where);
-        }
-
-        public virtual T GetById(string id, params Expression<Func<T, object>>[] includeProperties) {
-            if (includeProperties.Any()) {
-                return List(includeProperties).FirstOrDefault(x => x.Id == id);
-            }
-
-            return context.Set<T>().Find(id);
-        }
-
-        public virtual IQueryable<T> List(params Expression<Func<T, object>>[] includeProperties) {
+        public virtual IQueryable<T> List(bool readOnly, params Expression<Func<T, object>>[] includeProperties) {
             IQueryable<T> query = context.Set<T>();
 
             if (includeProperties.Any())
-                return Include(context.Set<T>(), includeProperties);
+                query = Include(context.Set<T>(), includeProperties);
+
+            if (readOnly)
+                query.AsNoTracking();
 
             return query;
         }
 
-        public virtual IQueryable<T> ListOrderedBy<TKey>(Expression<Func<T, TKey>> ordem, bool ascendente = true, params Expression<Func<T, object>>[] includeProperties) {
-            return ascendente ? List(includeProperties).OrderBy(ordem) : List(includeProperties).OrderByDescending(ordem);
+        public virtual IQueryable<T> ListOrderedBy<TKey>(bool readOnly, Expression<Func<T, TKey>> ordem, bool ascendente = true, params Expression<Func<T, object>>[] includeProperties) {
+            return ascendente ? List(readOnly, includeProperties).OrderBy(ordem) : List(readOnly, includeProperties).OrderByDescending(ordem);
         }
 
         public virtual void Register(T entity) {
@@ -112,18 +106,26 @@ namespace papuff.datainfra.Persistence {
 
         #region - async -
 
-        public virtual async Task<T> GetByIdAsync(string id) {
-            return await context.Set<T>().FirstOrDefaultAsync(e => e.Id == id);
+        public virtual async Task<T> GetByIdAsync(bool readOnly, string id, params Expression<Func<T, object>>[] includeProperties) {
+            if (includeProperties.Any())
+                return await List(readOnly, includeProperties).FirstOrDefaultAsync(x => x.Id == id);
+            return await context.Set<T>().FindAsync(id);
+        }
+
+        public virtual async Task<T> GetByAsync(bool readOnly, Expression<Func<T, bool>> where, params Expression<Func<T, object>>[] includeProperties) {
+            return await List(readOnly, includeProperties).FirstOrDefaultAsync(where);
         }
 
         public virtual async Task RegisterAsync(T entity) {
             await context.Set<T>().AddAsync(entity);
         }
 
-        public virtual async Task<List<T>> ListAsync(params Expression<Func<T, object>>[] includeProperties) {
-            if (includeProperties.Any())
-                return await Include(context.Set<T>(), includeProperties).ToListAsync();
-            return await context.Set<T>().ToListAsync();
+        public virtual async Task<IEnumerable<T>> ListAsync(bool readOnly, params Expression<Func<T, object>>[] includeProperties) {
+            return await List(readOnly, includeProperties).ToListAsync();
+        }
+
+        public virtual async Task<IEnumerable<T>> ListByAsync(bool readOnly, Expression<Func<T, bool>> where, params Expression<Func<T, object>>[] includeProperties) {
+            return await List(readOnly, includeProperties).Where(where).ToListAsync();
         }
 
         #endregion

@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using papuff.domain.Arguments.Base;
-using papuff.domain.Arguments.Companies;
 using papuff.domain.Arguments.Generals;
 using papuff.domain.Arguments.Security;
 using papuff.domain.Arguments.Users;
@@ -15,11 +14,11 @@ namespace papuff.webapi.Controllers {
     [Route("api/[controller]")]
     [Authorize]
     [ApiController]
-    public class UsersController : BaseController {
+    public class UserController : BaseController {
 
         public readonly IServiceUser _service;
 
-        public UsersController(IServiceUser service) {
+        public UserController(IServiceUser service) {
             _service = service;
         }
 
@@ -29,18 +28,21 @@ namespace papuff.webapi.Controllers {
         }
 
         [HttpGet("byEmail/{email}")]
-        public IActionResult ByEmail(string email) {
-            return Result(_service.GetByEmail(email));
+        public async Task<IActionResult> ByEmail(string email) {
+            var result = await _service.GetByEmail(email);
+            return Result(result);
         }
 
         [HttpGet("byId/{id}")]
-        public IActionResult ById(string id) {
-            return Result(_service.GetById(id));
+        public async Task<IActionResult> ByIdAsync(string id) {
+            var result = await _service.GetById(id);
+            return Result(result);
         }
 
         [HttpGet("all")]
-        public IActionResult All() {
-            return Result(_service.ListUsers());
+        public async Task<IActionResult> AllAsync() {
+            var result = await _service.ListUsers();
+            return Result(result);
         }
 
         [AllowAnonymous]
@@ -59,8 +61,8 @@ namespace papuff.webapi.Controllers {
         [HttpPost("register/operator")]
         public async Task<IActionResult> Operator([FromBody] UserRequest request) {
 
-            // todo pass to filter
-            Notifier.When<UsersController>(Logged.Type == UserType.Root, 
+            // todo - pass into filter attribute
+            Notifier.When<UserController>(Logged.Type == UserType.Root, 
                 "Você não possui privilégio.");
 
             await _service.Register(request, UserType.Operator);
@@ -84,10 +86,5 @@ namespace papuff.webapi.Controllers {
             await _service.Wallet(request.InjectAccount(LoggedLess, nameof(request.UserId)));
             return Result(new BaseResponse());
         }
-
-        //[HttpPost("company")]
-        //public async Task<IActionResult> Company([FromBody] CompanyRequest request) {
-        //    throw NotImplemented
-        //}
     }
 }

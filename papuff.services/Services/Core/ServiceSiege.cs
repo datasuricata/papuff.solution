@@ -77,19 +77,20 @@ namespace papuff.services.Services.Core {
 
                 siege.Init();
 
-                await repository.RegisterAsync(siege);
+                await _repository.RegisterAsync(siege);
             }
         }
 
-        public async Task Close(string id, string logged) {
-            var siege = await repository.GetByIdAsync(id);
+        public void Close(string id, string logged) {
+            var siege = _repository.GetById(false, id);
+
             Notifier.When<ServiceSiege>(siege.OwnerId != logged,
                 "Somente o proprietário pode fechar o grupo");
 
             if (Notifier.IsValid) {
                 _swap.Close(id);
                 _swap.Sync(id, siege);
-                repository.Update(siege);
+                _repository.Update(siege);
             }
         }
 

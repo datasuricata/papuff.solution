@@ -20,6 +20,40 @@ namespace papuff.datainfra.Migrations
                 .HasAnnotation("Relational:MaxIdentifierLength", 128)
                 .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
+            modelBuilder.Entity("papuff.domain.Core.Companies.Company", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("CNPJ");
+
+                    b.Property<DateTimeOffset?>("CreatedAt");
+
+                    b.Property<string>("Email");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<string>("Name");
+
+                    b.Property<DateTime>("OpeningDate");
+
+                    b.Property<string>("Registration");
+
+                    b.Property<string>("SiteUri");
+
+                    b.Property<string>("Tell");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt");
+
+                    b.Property<string>("UserId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Company");
+                });
+
             modelBuilder.Entity("papuff.domain.Core.Generals.Document", b =>
                 {
                     b.Property<string>("Id")
@@ -81,6 +115,8 @@ namespace papuff.datainfra.Migrations
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
 
+                    b.Property<int>("Ads");
+
                     b.Property<DateTime>("Available");
 
                     b.Property<DateTimeOffset?>("CreatedAt");
@@ -127,6 +163,8 @@ namespace papuff.datainfra.Migrations
 
                     b.Property<string>("City");
 
+                    b.Property<string>("CompanyId");
+
                     b.Property<int>("Complement");
 
                     b.Property<string>("Country");
@@ -149,6 +187,10 @@ namespace papuff.datainfra.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("CompanyId")
+                        .IsUnique()
+                        .HasFilter("[CompanyId] IS NOT NULL");
+
                     b.HasIndex("UserId")
                         .IsUnique()
                         .HasFilter("[UserId] IS NOT NULL");
@@ -170,6 +212,8 @@ namespace papuff.datainfra.Migrations
                     b.Property<string>("Nick");
 
                     b.Property<string>("Password");
+
+                    b.Property<int>("Type");
 
                     b.Property<DateTimeOffset?>("UpdatedAt");
 
@@ -210,6 +254,13 @@ namespace papuff.datainfra.Migrations
                     b.ToTable("Wallet");
                 });
 
+            modelBuilder.Entity("papuff.domain.Core.Companies.Company", b =>
+                {
+                    b.HasOne("papuff.domain.Core.Users.User", "User")
+                        .WithMany("Companies")
+                        .HasForeignKey("UserId");
+                });
+
             modelBuilder.Entity("papuff.domain.Core.Generals.Document", b =>
                 {
                     b.HasOne("papuff.domain.Core.Users.User", "User")
@@ -233,6 +284,10 @@ namespace papuff.datainfra.Migrations
 
             modelBuilder.Entity("papuff.domain.Core.Users.Address", b =>
                 {
+                    b.HasOne("papuff.domain.Core.Companies.Company", "Company")
+                        .WithOne("Address")
+                        .HasForeignKey("papuff.domain.Core.Users.Address", "CompanyId");
+
                     b.HasOne("papuff.domain.Core.Users.User", "User")
                         .WithOne("Address")
                         .HasForeignKey("papuff.domain.Core.Users.Address", "UserId");

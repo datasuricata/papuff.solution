@@ -10,10 +10,11 @@ namespace papuff.domain.Interfaces.Services.Core {
     public interface IServiceUser {
         
         User GetMe(string id);
-        User GetByEmail(string email);
-        User GetById(string id);
 
-        IEnumerable<User> ListUsers();
+        Task<User> GetByEmail(string email);
+        Task<User> GetById(string id);
+
+        Task<IEnumerable<User>> ListUsers();
 
         AuthResponse Authenticate(AuthRequest request);
 
