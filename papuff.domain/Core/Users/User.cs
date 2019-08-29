@@ -32,5 +32,13 @@ namespace papuff.domain.Core.Users {
         public void SetType(UserType type) {
             Type = type;
         }
+
+        public void ValidateDocs() {
+            if (Documents.TrueForAll(a => a.Aproved))
+                General.SetStage(CurrentStage.Aproved);
+
+            if (Documents.TrueForAll(a => !a.Aproved))
+                General.SetStage(CurrentStage.Recused);
+        }
     }
 }

@@ -7,6 +7,7 @@ namespace papuff.domain.Core.Generals {
 
         public string Value { get; set; }
         public string ImageUri { get; set; }
+        public bool Aproved { get; set; }
         public DocumentType Type { get; set; }
 
         public string UserId { get; set; }
@@ -20,5 +21,9 @@ namespace papuff.domain.Core.Generals {
         }
 
         protected Document() { }
+
+        public void PadLock() {
+            Aproved = !Aproved;
+        }
     }
 }

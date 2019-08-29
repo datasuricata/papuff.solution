@@ -30,6 +30,7 @@ namespace papuff.services.Services.Core {
         /// </summary>
         private readonly IConfiguration _appConf;
 
+        private readonly IRepository<Document> _repositoryDocument;
         private readonly IRepository<General> _repositoryGeneral;
         private readonly IRepository<Address> _repositoryAddress;
         private readonly IRepository<Wallet> _repositoryWallet;
@@ -42,8 +43,10 @@ namespace papuff.services.Services.Core {
         IConfiguration appConf,
         IRepository<General> repositoryGeneral,
         IRepository<Address> repositoryAddress,
-        IRepository<Wallet> repositoryWallet) : base(provider) {
+        IRepository<Wallet> repositoryWallet,
+        IRepository<Document> repositoryDocument) : base(provider) {
             _appConf = appConf;
+            _repositoryDocument = repositoryDocument;
             _repositoryGeneral = repositoryGeneral;
             _repositoryAddress = repositoryAddress;
             _repositoryWallet = repositoryWallet;
@@ -100,7 +103,7 @@ namespace papuff.services.Services.Core {
             Notifier.When<ServiceUser>(user?.Password != request.Password,
                 "Senha não confere, verifique e tente novamente.");
 
-            ValidEntity<SecurityValidator>(user);
+            //ValidEntity<SecurityValidator>(user);
 
             if (!Notifier.IsValid) return null;
 
@@ -149,25 +152,24 @@ namespace papuff.services.Services.Core {
 
             if (current is null) {
                 var general = new General(request.BirthDate, request.Name,
-                    request.Description, request.Stage, request.UserId);
+                    request.Description, CurrentStage.Pending, request.UserId);
 
                 new GeneralValidator().Validate(general);
                 await _repositoryGeneral.RegisterAsync(general);
             } else {
                 current.Update(request.BirthDate, request.Name,
-                    request.Description, request.Stage);
-
+                    request.Description);
                 _repositoryGeneral.Update(current);
             }
         }
 
         public async Task Address(AddressRequest request) {
-            var current = _repositoryAddress.GetBy(false, u => u.UserId == request.UserId);
+            var current = _repositoryAddress.GetBy(false, u => u.UserId == request.OwnerId || u.CompanyId == request.OwnerId);
 
             if (current is null) {
                 var address = new Address(request.Building, request.Number, request.Complement,
                     request.AddressLine, request.District, request.City, request.StateProvince,
-                    request.Country, request.PostalCode, request.UserId, false);
+                    request.Country, request.PostalCode, request.OwnerId, false);
 
                 new AddressValidator().Validate(address);
                 await _repositoryAddress.RegisterAsync(address);
@@ -181,7 +183,7 @@ namespace papuff.services.Services.Core {
         }
 
         public async Task Wallet(WalletRequest request) {
-            var current = _repositoryWallet.GetBy(false, u => u.UserId == request.UserId);
+            var current = _repositoryWallet.GetBy(false, u => u.Id == request.Id);
 
             if (current is null) {
                 var wallet = new Wallet(request.Type, request.Agency, request.Account,
@@ -194,6 +196,15 @@ namespace papuff.services.Services.Core {
                     request.Document, request.DateDue, request.IsDefault);
 
                 _repositoryWallet.Update(current);
+            }
+        }
+
+        public async Task Document(DocumentRequest request) {
+            var current = _repositoryDocument.GetByAsync(false, u => u.Id == request.Id);
+
+            if(current is null) {
+                var document = new Document(request.Value, request.ImageUri, request.Type, request.UserId);
+                new DocumentValidator
             }
         }
 

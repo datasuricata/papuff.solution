@@ -14,11 +14,10 @@ namespace papuff.domain.Core.Generals {
             UserId = userId;
         }
 
-        public void Update(DateTime birthDate, string name, string description, CurrentStage stage) {
+        public void Update(DateTime birthDate, string name, string description) {
             BirthDate = birthDate;
             Name = name;
             Description = description;
-            Stage = stage;
         }
 
         protected General() { }
@@ -30,5 +29,9 @@ namespace papuff.domain.Core.Generals {
 
         public string UserId { get; private set; }
         public User User { get; set; }
+
+        public void SetStage(CurrentStage stage) {
+            Stage = stage;
+        }
     }
 }

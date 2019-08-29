@@ -77,7 +77,7 @@ namespace papuff.webapi.Controllers {
 
         [HttpPost("address")]
         public async Task<IActionResult> Address([FromBody] AddressRequest request) {
-            await _service.Address(request.InjectAccount(LoggedLess, nameof(request.UserId)));
+            await _service.Address(request.InjectAccount(LoggedLess, nameof(request.OwnerId)));
             return Result(new BaseResponse());
         }
 
