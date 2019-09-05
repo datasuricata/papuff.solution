@@ -13,7 +13,6 @@ using System.Threading.Tasks;
 namespace papuff.datainfra.Seeder {
     public static class DataSeed {
         public static async Task InitializeAsync(IServiceProvider service) {
-
             using (var context = new AppDbContext(service.GetRequiredService<DbContextOptions<AppDbContext>>())) {
 
                 if (!context.Users.Any()) {

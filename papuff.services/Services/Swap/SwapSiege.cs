@@ -15,6 +15,7 @@ namespace papuff.services.Services.Swap {
             return Sieges.FirstOrDefault(x => x.Id == id);
         }
 
+
         public IEnumerable<Siege> ListSieges() {
             return Sieges;
         }
@@ -22,6 +23,20 @@ namespace papuff.services.Services.Swap {
         public IEnumerable<Siege> ListAvaiables() {
             return Sieges.Where(s => new[] { SiegeStatus.Available, SiegeStatus.Opened }.Contains(s.Status));
         }
+
+        public IEnumerable<Siege> CheckIn(IEnumerable<Siege> sieges, User logged) {
+
+            var accessible = sieges.Where(s => !s.Users.Any(u => u.Id == logged.Id) && s.Visibility == VisibilityType.Public);
+
+            lock (_lock) {
+                foreach (var s in accessible) {
+                    s.Users.Add(logged);
+                }
+            }
+
+            return accessible;
+        }
+
 
         public void Add(Siege siege) {
             lock (_lock) {
@@ -47,23 +62,6 @@ namespace papuff.services.Services.Swap {
             }
         }
 
-        public bool IsOwner(string id, string OwnerId) {
-            return Sieges.Exists(s => s.Id == id && s.OwnerId == OwnerId);
-        }
-
-        public IEnumerable<Siege> CheckIn(IEnumerable<Siege> sieges, User logged) {
-
-            var accessible = sieges.Where(s => !s.Users.Any(u => u.Id == logged.Id) && s.Visibility == VisibilityType.Public);
-
-            lock (_lock) {
-                foreach (var s in accessible) {
-                    s.Users.Add(logged);
-                }
-            }
-
-            return accessible;
-        }
-
         public void CheckOut(string id, string logged) {
 
             var siege = GetById(id);
@@ -81,6 +79,11 @@ namespace papuff.services.Services.Swap {
                 siege.Advertising = advertising;
                 siege.Push(true);
             }
+        }
+
+
+        public bool IsOwner(string id, string OwnerId) {
+            return Sieges.Exists(s => s.Id == id && s.OwnerId == OwnerId);
         }
     }
 }

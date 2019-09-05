@@ -5,8 +5,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Folder Include="Interfaces\Base\" />
-    <Folder Include="Interfaces\Services\App\" />
+    <Compile Remove="Interfaces\Base\**" />
+    <Compile Remove="Interfaces\Services\App\**" />
+    <EmbeddedResource Remove="Interfaces\Base\**" />
+    <EmbeddedResource Remove="Interfaces\Services\App\**" />
+    <None Remove="Interfaces\Base\**" />
+    <None Remove="Interfaces\Services\App\**" />
   </ItemGroup>
 
   <ItemGroup>

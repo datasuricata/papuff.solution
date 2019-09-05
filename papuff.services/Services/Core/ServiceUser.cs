@@ -22,7 +22,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace papuff.services.Services.Core {
-    public class ServiceUser : ServiceApp<User>, IServiceUser {
+    public class ServiceUser : ServiceBase, IServiceUser {
         #region - attributes -
 
         /// <summary>
@@ -30,10 +30,11 @@ namespace papuff.services.Services.Core {
         /// </summary>
         private readonly IConfiguration _appConf;
 
-        private readonly IRepository<Document> _repositoryDocument;
-        private readonly IRepository<General> _repositoryGeneral;
-        private readonly IRepository<Address> _repositoryAddress;
-        private readonly IRepository<Wallet> _repositoryWallet;
+        private readonly IRepository<User> _repoUser;
+        private readonly IRepository<Document> _repoDocument;
+        private readonly IRepository<General> _repoGeneral;
+        private readonly IRepository<Address> _repoAddress;
+        private readonly IRepository<Wallet> _repoWallet;
 
         #endregion
 
@@ -41,15 +42,17 @@ namespace papuff.services.Services.Core {
 
         public ServiceUser(IServiceProvider provider,
         IConfiguration appConf,
-        IRepository<General> repositoryGeneral,
-        IRepository<Address> repositoryAddress,
-        IRepository<Wallet> repositoryWallet,
-        IRepository<Document> repositoryDocument) : base(provider) {
+        IRepository<User> repoUser,
+        IRepository<General> repoGeneral,
+        IRepository<Address> repoAddress,
+        IRepository<Wallet> repoWallet,
+        IRepository<Document> repoDocument) : base(provider) {
             _appConf = appConf;
-            _repositoryDocument = repositoryDocument;
-            _repositoryGeneral = repositoryGeneral;
-            _repositoryAddress = repositoryAddress;
-            _repositoryWallet = repositoryWallet;
+            _repoUser = repoUser; 
+            _repoDocument = repoDocument;
+            _repoGeneral = repoGeneral;
+            _repoAddress = repoAddress;
+            _repoWallet = repoWallet;
         }
 
         #endregion
@@ -61,8 +64,8 @@ namespace papuff.services.Services.Core {
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public User GetMe(string id) {
-            return _repository.GetById(false, id);
+        public async Task<User> GetMe(string id) {
+            return await _repoUser.ById(false, id);
         }
 
         /// <summary>
@@ -71,16 +74,16 @@ namespace papuff.services.Services.Core {
         /// <param name="email"></param>
         /// <returns></returns>
         public async Task<User> GetByEmail(string email) {
-            return await _repository.GetByAsync(false, m => m.Email
+            return await _repoUser.By(false, m => m.Email
                 .Equals(email, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public async Task<User> GetById(string id) {
-            return await _repository.GetByIdAsync(false, id, i => i.General, i => i.Documents);
+            return await _repoUser.ById(false, id, i => i.General, i => i.Documents);
         }
 
         public async Task<IEnumerable<User>> ListUsers() {
-            return await _repository.ListByAsync(false, x => !x.IsDeleted);
+            return await _repoUser.ListBy(false, x => !x.IsDeleted);
         }
 
         #endregion
@@ -92,20 +95,20 @@ namespace papuff.services.Services.Core {
         /// </summary>
         /// <param name="request"></param>
         /// <returns></returns>
-        public AuthResponse Authenticate(AuthRequest request) {
-            var user = _repository
-                .GetBy(true, u => u.Email
-                    .Equals(request.Email, StringComparison.InvariantCultureIgnoreCase));
+        public async Task<AuthResponse> Authenticate(AuthRequest request) {
+            var user = await _repoUser
+                .By(true, u => u.Email.Equals(request.Login, StringComparison.InvariantCultureIgnoreCase) ||
+                    u.Nick.Equals(request.Login, StringComparison.InvariantCultureIgnoreCase));
 
-            Notifier.When<ServiceUser>(user == null,
+            _notify.When<ServiceUser>(user == null,
                 "Usuário não encontrado.");
 
-            Notifier.When<ServiceUser>(user?.Password != request.Password,
+            _notify.When<ServiceUser>(user?.Password != request.Password,
                 "Senha não confere, verifique e tente novamente.");
 
             //ValidEntity<SecurityValidator>(user);
 
-            if (!Notifier.IsValid) return null;
+            if (!_notify.IsValid) return null;
 
             var handler = new JwtSecurityTokenHandler();
             var key = Encoding.ASCII.GetBytes(_appConf["SecurityKey"]);
@@ -130,41 +133,41 @@ namespace papuff.services.Services.Core {
         #region - register -
 
         public async Task Register(UserRequest request, UserType type) {
-            Notifier.When<ServiceUser>(
-                _repository.Exist(u => u.Email.Equals(request.Email, StringComparison.InvariantCultureIgnoreCase)),
+            _notify.When<ServiceUser>(
+                _repoUser.Exist(u => u.Email.Equals(request.Email, StringComparison.InvariantCultureIgnoreCase)),
                 "Já existe um registro para este e-mail.");
 
-            Notifier.When<ServiceUser>(
-                _repository.Exist(u => u.Nick.Equals(request.Nick, StringComparison.InvariantCultureIgnoreCase)),
+            _notify.When<ServiceUser>(
+                _repoUser.Exist(u => u.Nick.Equals(request.Nick, StringComparison.InvariantCultureIgnoreCase)),
                 "Este nick já esta em uso.");
 
-            if (Notifier.IsValid) {
+            if (_notify.IsValid) {
                 var user = new User(request.Email, request.Password.Encrypt(), request.Nick);
                 user.SetType(type);
 
-                ValidEntity<UserValidator>(user);
-                await _repository.RegisterAsync(user);
+                _notify.Validate(user, new UserValidator());
+                await _repoUser.Register(user);
             }
         }
 
         public async Task General(GeneralRequest request) {
-            var current = _repositoryGeneral.GetBy(false, u => u.UserId == request.UserId);
+            var current = await _repoGeneral.By(false, u => u.UserId == request.UserId);
 
             if (current is null) {
                 var general = new General(request.BirthDate, request.Name,
                     request.Description, CurrentStage.Pending, request.UserId);
 
                 new GeneralValidator().Validate(general);
-                await _repositoryGeneral.RegisterAsync(general);
+                await _repoGeneral.Register(general);
             } else {
                 current.Update(request.BirthDate, request.Name,
                     request.Description);
-                _repositoryGeneral.Update(current);
+                _repoGeneral.Update(current);
             }
         }
 
         public async Task Address(AddressRequest request) {
-            var current = _repositoryAddress.GetBy(false, u => u.UserId == request.OwnerId || u.CompanyId == request.OwnerId);
+            var current = await _repoAddress.By(false, u => u.UserId == request.OwnerId || u.CompanyId == request.OwnerId);
 
             if (current is null) {
                 var address = new Address(request.Building, request.Number, request.Complement,
@@ -172,39 +175,38 @@ namespace papuff.services.Services.Core {
                     request.Country, request.PostalCode, request.OwnerId, false);
 
                 new AddressValidator().Validate(address);
-                await _repositoryAddress.RegisterAsync(address);
+                await _repoAddress.Register(address);
             } else {
                 current.Update(request.Building, request.Number, request.Complement,
                     request.AddressLine, request.District, request.City, request.StateProvince,
                     request.Country, request.PostalCode);
 
-                _repositoryAddress.Update(current);
+                _repoAddress.Update(current);
             }
         }
 
         public async Task Wallet(WalletRequest request) {
-            var current = _repositoryWallet.GetBy(false, u => u.Id == request.Id);
+            var current = await _repoWallet.By(false, u => u.Id == request.Id);
 
             if (current is null) {
                 var wallet = new Wallet(request.Type, request.Agency, request.Account,
                     request.Document, request.DateDue, request.IsDefault, request.UserId);
 
                 new WalletValidator().Validate(wallet);
-                await _repositoryWallet.RegisterAsync(wallet);
+                await _repoWallet.Register(wallet);
             } else {
                 current.Update(request.Type, request.Agency, request.Account,
                     request.Document, request.DateDue, request.IsDefault);
 
-                _repositoryWallet.Update(current);
+                _repoWallet.Update(current);
             }
         }
 
         public async Task Document(DocumentRequest request) {
-            var current = _repositoryDocument.GetByAsync(false, u => u.Id == request.Id);
+            var current = await _repoDocument.By(false, u => u.Id == request.Id);
 
             if(current is null) {
                 var document = new Document(request.Value, request.ImageUri, request.Type, request.UserId);
-                new DocumentValidator
             }
         }
 

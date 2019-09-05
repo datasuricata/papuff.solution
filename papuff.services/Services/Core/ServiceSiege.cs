@@ -6,6 +6,7 @@ using papuff.domain.Core.Enums;
 using papuff.domain.Core.Sieges;
 using papuff.domain.Core.Users;
 using papuff.domain.Helpers;
+using papuff.domain.Interfaces.Repositories;
 using papuff.domain.Interfaces.Services.Core;
 using papuff.domain.Interfaces.Services.Swap;
 using papuff.services.Hubs;
@@ -18,20 +19,25 @@ using System.Linq;
 using System.Threading.Tasks;
 
 namespace papuff.services.Services.Core {
-    public class ServiceSiege : ServiceApp<Siege>, IServiceSiege {
+    public class ServiceSiege : ServiceBase, IServiceSiege {
 
         #region - attributes -
 
         private readonly ISwapSiege _swap;
+        private readonly IRepository<Siege> _repository;
         private readonly IHubContext<NotifyHub> _hub;
 
         #endregion
 
         #region - ctor -
 
-        public ServiceSiege(IServiceProvider provider, ISwapSiege swap, IHubContext<NotifyHub> hub) : base(provider) {
+        public ServiceSiege(IServiceProvider provider,
+            ISwapSiege swap,
+            IHubContext<NotifyHub> hub,
+            IRepository<Siege> repository) : base(provider) {
             _swap = swap;
             _hub = hub;
+            _repository = repository;
         }
 
         #endregion
@@ -46,10 +52,10 @@ namespace papuff.services.Services.Core {
                 .DistanceTo(new Coordinate(request.Latitude, request.Longitude)) <= s.Range);
 
             if (sieges.Any()) {
-                Notifier.When<ServiceSiege>(new[] { CurrentStage.Recused, CurrentStage.Blocked }.Contains(logged.General.Stage),
+                _notify.When<ServiceSiege>(new[] { CurrentStage.Recused, CurrentStage.Blocked }.Contains(logged.General.Stage),
                  "Entre em contato com o suporte para resolver pendencias com seu login.");
 
-                if (Notifier.IsValid)
+                if (_notify.IsValid)
                     return _swap.CheckIn(sieges, logged);
             }
 
@@ -63,7 +69,7 @@ namespace papuff.services.Services.Core {
                 request.ImageUri, request.Latitude, request.Longitude,
                 request.Range, request.Seconds, request.OwnerId);
 
-            if (Notifier.IsValid) {
+            if (_notify.IsValid) {
                 _swap.Add(siege);
 
                 #region - events -
@@ -77,17 +83,17 @@ namespace papuff.services.Services.Core {
 
                 siege.Init();
 
-                await _repository.RegisterAsync(siege);
+                await _repository.Register(siege);
             }
         }
 
-        public void Close(string id, string logged) {
-            var siege = _repository.GetById(false, id);
+        public async Task Close(string id, string logged) {
+            var siege = await _repository.ById(false, id);
 
-            Notifier.When<ServiceSiege>(siege.OwnerId != logged,
+            _notify.When<ServiceSiege>(siege.OwnerId != logged,
                 "Somente o proprietário pode fechar o grupo");
 
-            if (Notifier.IsValid) {
+            if (_notify.IsValid) {
                 _swap.Close(id);
                 _swap.Sync(id, siege);
                 _repository.Update(siege);
@@ -95,7 +101,7 @@ namespace papuff.services.Services.Core {
         }
 
         public void ReceiveAds(AdsRequest request) {
-            Notifier.When<ServiceSiege>(_swap.IsOwner(request.SiegeId, request.OwnerId),
+            _notify.When<ServiceSiege>(_swap.IsOwner(request.SiegeId, request.OwnerId),
                 "Somente o proprietário pode criar uma propaganda.");
 
             var ads = new Advertising(request.Title, request.Description,
@@ -103,7 +109,7 @@ namespace papuff.services.Services.Core {
 
             new AdsValidator().Validate(ads);
 
-            if (Notifier.IsValid)
+            if (_notify.IsValid)
                 _swap.PushAds(request.SiegeId, ads);
         }
 

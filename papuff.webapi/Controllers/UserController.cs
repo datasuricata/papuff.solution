@@ -62,7 +62,7 @@ namespace papuff.webapi.Controllers {
         public async Task<IActionResult> Operator([FromBody] UserRequest request) {
 
             // todo - pass into filter attribute
-            Notifier.When<UserController>(Logged.Type == UserType.Root, 
+            _notify.When<UserController>(Logged.Type == UserType.Root, 
                 "Você não possui privilégio.");
 
             await _service.Register(request, UserType.Operator);

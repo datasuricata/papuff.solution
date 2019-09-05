@@ -77,24 +77,19 @@ namespace papuff.datainfra.ORM {
         }
 
         public override Task<int> SaveChangesAsync(bool acceptAllChangesOnSuccess, CancellationToken cancellationToken = default(CancellationToken)) {
+
             foreach (var entry in ChangeTracker.Entries().Where(entry =>
-            entry.Entity.GetType().GetProperty(nameof(EntityBase.CreatedAt)) != null ||
-            entry.Entity.GetType().GetProperty(nameof(EntityBase.UpdatedAt)) != null ||
-            entry.Entity.GetType().GetProperty(nameof(EntityBase.Id)) != null)) {
+                            entry.Entity.GetType().GetProperty(nameof(EntityBase.CreatedAt)) != null ||
+                            entry.Entity.GetType().GetProperty(nameof(EntityBase.UpdatedAt)) != null)) {
                 if (entry.Property(nameof(EntityBase.CreatedAt)) != null)
                     if (entry.State == EntityState.Added)
-                        entry.Property(nameof(EntityBase.CreatedAt)).CurrentValue = DateTimeOffset.UtcNow;
+                        entry.Property(nameof(EntityBase.CreatedAt)).CurrentValue = DateTimeOffset.Now;
                     else if (entry.State == EntityState.Modified)
                         entry.Property(nameof(EntityBase.CreatedAt)).IsModified = false;
 
                 if (entry.Property(nameof(EntityBase.UpdatedAt)) != null)
                     if (entry.State == EntityState.Added || entry.State == EntityState.Modified)
-                        entry.Property(nameof(EntityBase.UpdatedAt)).CurrentValue = DateTimeOffset.UtcNow;
-
-                if (entry.Property(nameof(EntityBase.Id)) != null)
-                    if (entry.State == EntityState.Added)
-                        if (string.IsNullOrEmpty((string)entry.Property(nameof(EntityBase.Id)).CurrentValue))
-                            entry.Property(nameof(EntityBase.Id)).CurrentValue = Guid.NewGuid().ToString().ToUpper().Replace("-", "");
+                        entry.Property(nameof(EntityBase.UpdatedAt)).CurrentValue = DateTimeOffset.Now;
             }
 
             return base.SaveChangesAsync(acceptAllChangesOnSuccess, cancellationToken);

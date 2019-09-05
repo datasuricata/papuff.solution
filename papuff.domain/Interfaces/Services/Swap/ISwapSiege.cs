@@ -8,15 +8,14 @@ namespace papuff.domain.Interfaces.Services.Swap {
         Siege GetById(string id);
         IEnumerable<Siege> ListSieges();
         IEnumerable<Siege> ListAvaiables();
+        IEnumerable<Siege> CheckIn(IEnumerable<Siege> sieges, User logged);
 
         void Add(Siege siege);
         void Close(string id);
         void Sync(string id, Siege entity);
-
-        bool IsOwner(string id, string OwnerId);
-
-        IEnumerable<Siege> CheckIn(IEnumerable<Siege> sieges, User logged);
         void CheckOut(string id, string logged);
         void PushAds(string id, Advertising advertising);
+
+        bool IsOwner(string id, string OwnerId);
     }
 }

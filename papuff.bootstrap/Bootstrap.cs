@@ -7,10 +7,10 @@ using papuff.domain.Interfaces.Repositories;
 using papuff.domain.Interfaces.Services.Base;
 using papuff.domain.Interfaces.Services.Core;
 using papuff.domain.Interfaces.Services.Swap;
-using papuff.domain.Notifications.Events;
 using papuff.services.Services.Base;
 using papuff.services.Services.Core;
 using papuff.services.Services.Swap;
+using papuff.services.Validators.Notifications.Events;
 
 namespace papuff.bootstrap {
     public static class Bootstrap {
@@ -24,7 +24,6 @@ namespace papuff.bootstrap {
             #region - kernel -
 
             services.AddScoped(typeof(IServiceBase), typeof(ServiceBase));
-            services.AddScoped(typeof(IServiceApp<>), typeof(ServiceApp<>));
             services.AddScoped(typeof(IUnitOfWork), typeof(UnitOfWork));
             services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
             services.AddScoped(typeof(IEventNotifier), typeof(EventNotifier));
@@ -34,6 +33,7 @@ namespace papuff.bootstrap {
             #region - core -
 
             services.AddScoped(typeof(IServiceUser), typeof(ServiceUser));
+            services.AddScoped(typeof(IServiceEnterprise), typeof(ServiceEnterprise));
 
             #endregion
 

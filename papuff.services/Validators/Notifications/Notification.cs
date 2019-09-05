@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace papuff.domain.Notifications {
+namespace papuff.services.Validators.Notifications {
     public class Notifier {
         // # properties
         public List<Notification> Notifications { get; set; }

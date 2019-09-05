@@ -4,22 +4,23 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using papuff.domain.Core.Users;
 using papuff.domain.Helpers;
 using papuff.domain.Interfaces.Services.Core;
-using papuff.domain.Notifications.Events;
+using papuff.services.Validators.Notifications.Events;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading.Tasks;
 
 namespace papuff.webapi.Controllers.Base {
     public class BaseController : ControllerBase {
         
         #region - parameters -
 
-        private IServiceUser ServiceUser =>
+        private IServiceUser _user =>
             (IServiceUser)HttpContext.RequestServices
                 .GetService(typeof(IServiceUser));
 
-        protected IEventNotifier Notifier =>
+        protected IEventNotifier _notify =>
             (IEventNotifier)HttpContext.RequestServices
                 .GetService(typeof(IEventNotifier));
 
@@ -45,8 +46,8 @@ namespace papuff.webapi.Controllers.Base {
         /// <returns></returns>
         protected IActionResult Result(object result = null) {
             try {
-                if (!Notifier.IsValid)
-                    return BadRequest(Notifier.GetNotifications());
+                if (!_notify.IsValid)
+                    return BadRequest(_notify.GetNotifications());
 
                 if (result == null)
                     return Ok();
@@ -67,7 +68,7 @@ namespace papuff.webapi.Controllers.Base {
         /// return user info from current context
         /// </summary>
         /// <returns></returns>
-        protected User Logged => ServiceUser?.GetMe(User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? "");
+        protected User Logged => Task.Run(async () => await _user.GetMe(User?.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? ""))?.Result;
 
         /// <summary>
         /// return user info from current context

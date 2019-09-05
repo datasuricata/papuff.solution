@@ -8,15 +8,14 @@ using System.Threading.Tasks;
 
 namespace papuff.domain.Interfaces.Services.Core {
     public interface IServiceUser {
-        
-        User GetMe(string id);
 
+        Task<User> GetMe(string id);
         Task<User> GetByEmail(string email);
         Task<User> GetById(string id);
 
         Task<IEnumerable<User>> ListUsers();
 
-        AuthResponse Authenticate(AuthRequest request);
+        Task<AuthResponse> Authenticate(AuthRequest request);
 
         Task Register(UserRequest request, UserType type);
         Task General(GeneralRequest request);

@@ -12,27 +12,31 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace papuff.services.Services.Core {
-    public class ServiceEnterprise : ServiceApp<Company>, IServiceEnterprise {
+    public class ServiceEnterprise : ServiceBase, IServiceEnterprise {
 
-        private readonly IRepository<Address> _repositoryAddress;
+        private readonly IRepository<Company> _repoCompany;
+        private readonly IRepository<Address> _repoAddress;
 
-        public ServiceEnterprise(IServiceProvider provider, IRepository<Address> repositoryAddress) : base(provider) {
-            _repositoryAddress = repositoryAddress;
+        public ServiceEnterprise(IServiceProvider provider, 
+            IRepository<Address> repoAddress,
+            IRepository<Company> repoCompany) : base(provider) {
+            _repoAddress = repoAddress;
+            _repoCompany = repoCompany;
         }
 
         public async Task Register(CompanyRequest request) {
             var company = new Company(request.Name, request.Email, request.SiteUri, request.CNPJ,
                 request.Tell, request.Registration, request.OpeningDate, request.UserId);
 
-            ValidEntity<CompanyValidator>(company);
+            _notify.Validate(company, new CompanyValidator());
 
-            if (Notifier.IsValid)
-                await _repository.RegisterAsync(company);
+            if (_notify.IsValid)
+                await _repoCompany.Register(company);
         }
 
         public async Task Address(AddressRequest request) {
 
-            var current = _repositoryAddress.GetById(false, request.Id);
+            var current = await _repoAddress.ById(false, request.Id);
 
             if (current is null) {
                 var address = new Address(request.Building, request.Number, request.Complement,
@@ -40,27 +44,27 @@ namespace papuff.services.Services.Core {
                     request.Country, request.PostalCode, request.CompanyId, true);
 
                 new AddressValidator().Validate(address);
-                await _repositoryAddress.RegisterAsync(address);
+                await _repoAddress.Register(address);
 
             } else {
                 current.Update(request.Building, request.Number, request.Complement,
                     request.AddressLine, request.District, request.City, request.StateProvince,
                     request.Country, request.PostalCode);
 
-                _repositoryAddress.Update(current);
+                _repoAddress.Update(current);
             }
         }
 
         public async Task<Company> GetById(string id) {
-            return await _repository.GetByIdAsync(true, id);
+            return await _repoCompany.ById(true, id);
         }
 
         public async Task<IEnumerable<Company>> GetByUser(string logged) {
-            return await _repository.ListByAsync(true, c => c.UserId == logged);
+            return await _repoCompany.ListBy(true, c => c.UserId == logged);
         }
 
         public async Task<IEnumerable<Company>> GetCompanies() {
-            return await _repository.ListByAsync(true, c => !c.IsDeleted);
+            return await _repoCompany.ListBy(true, c => !c.IsDeleted);
         }
     }
 }

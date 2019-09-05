@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http.Internal;
 using Newtonsoft.Json;
-using papuff.domain.Notifications;
 using papuff.services.Requests.Base;
+using papuff.services.Validators.Notifications;
 using System;
 using System.IO;
 using System.Net.Http;
@@ -23,11 +23,10 @@ namespace papuff.services.Requests {
         public async Task<string> UploadFile(FormFile File, string extension, string endpoint, string token = "") {
             try {
                 byte[] data;
-                var message = new Notification();
+                var notification = new Notification();
 
                 using (Stream inputStream = File.OpenReadStream()) {
-                    MemoryStream memoryStream = inputStream as MemoryStream;
-                    if (memoryStream == null) {
+                    if (!(inputStream is MemoryStream memoryStream)) {
                         memoryStream = new MemoryStream();
                         inputStream.CopyTo(memoryStream);
                     }
@@ -57,10 +56,10 @@ namespace papuff.services.Requests {
 
                     if (response.IsSuccessStatusCode) {
 
-                        message.Value = await response.Content.ReadAsStringAsync();
-                        var mens = JsonConvert.DeserializeObject<Notification>(message.Value);
+                        notification.Value = await response.Content.ReadAsStringAsync();
+                        var message = JsonConvert.DeserializeObject<Notification>(notification.Value);
 
-                        return mens.Value;
+                        return message.Value;
                     } else {
                         var result = await response.Content.ReadAsStringAsync();
                         throw new Exception(result);

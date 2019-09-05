@@ -1,12 +1,11 @@
-﻿using System;
+﻿using FluentValidation;
+using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Linq;
-using System.Linq.Expressions;
 
-namespace papuff.domain.Notifications.Events {
-	public sealed class EventNotifier : IEventNotifier {
+namespace papuff.services.Validators.Notifications.Events {
+    public sealed class EventNotifier : IEventNotifier {
 		#region - parameters -
 
 		private readonly Notifier _notifier;
@@ -36,7 +35,18 @@ namespace papuff.domain.Notifications.Events {
         public void Add<N>(string message) => _notifier.Notifications.Add(new Notification
 			{Key = typeof(N).Name, Value = message, StatusCode = 400});
 
-		public void AddException<N>(string message, Exception exception = null) {
+        public void Validate<T>(T model, AbstractValidator<T> validator) {
+            if (model == null) {
+                Add<EventNotifier>("Não encontrado.");
+                return;
+            }
+            validator.Validate(model).Errors?.Where(f => f != null)
+                .ToList().ForEach(v => {
+                    Add<EventNotifier>(v.ErrorMessage);
+                });
+        }
+
+        public void AddException<N>(string message, Exception exception = null) {
 			var stack = new StackTrace(exception);
 			var frames = stack.GetFrames();
 
