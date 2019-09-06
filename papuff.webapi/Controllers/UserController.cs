@@ -47,8 +47,9 @@ namespace papuff.webapi.Controllers {
 
         [AllowAnonymous]
         [HttpPost("auth")]
-        public IActionResult Auth([FromBody] AuthRequest request) {
-            return Result(_service.Authenticate(request));
+        public async Task<IActionResult> AuthAsync([FromBody] AuthRequest request) {
+            var result = await _service.Authenticate(request);
+            return Result(result);
         }
 
         [AllowAnonymous]

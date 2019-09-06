@@ -98,15 +98,13 @@ namespace papuff.services.Services.Core {
         public async Task<AuthResponse> Authenticate(AuthRequest request) {
             var user = await _repoUser
                 .By(true, u => u.Email.Equals(request.Login, StringComparison.InvariantCultureIgnoreCase) ||
-                    u.Nick.Equals(request.Login, StringComparison.InvariantCultureIgnoreCase));
+                    u.Nick.Equals(request.Login, StringComparison.InvariantCultureIgnoreCase), i => i.General);
 
             _notify.When<ServiceUser>(user == null,
                 "Usuário não encontrado.");
 
             _notify.When<ServiceUser>(user?.Password != request.Password,
                 "Senha não confere, verifique e tente novamente.");
-
-            //ValidEntity<SecurityValidator>(user);
 
             if (!_notify.IsValid) return null;
 
@@ -115,8 +113,8 @@ namespace papuff.services.Services.Core {
 
             var payload = new SecurityTokenDescriptor {
                 Subject = new ClaimsIdentity(new[] {
-                    new Claim(ClaimTypes.Email, user.Email),
                     new Claim(ClaimTypes.NameIdentifier, user.Id),
+                    new Claim(ClaimTypes.Role, user.Type.ToString()),
                 }),
                 Expires = DateTime.UtcNow.AddHours(3),
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key),
