@@ -8,6 +8,7 @@ using papuff.domain.Core.Enums;
 using papuff.domain.Interfaces.Services.Core;
 using papuff.domain.Security;
 using papuff.webapi.Controllers.Base;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace papuff.webapi.Controllers {
@@ -24,30 +25,30 @@ namespace papuff.webapi.Controllers {
 
         [HttpGet("me")]
         public IActionResult Me() {
-            return Result(Logged);
+            return Result((UserResponse)Logged);
         }
 
         [HttpGet("byEmail/{email}")]
         public async Task<IActionResult> ByEmail(string email) {
             var result = await _service.GetByEmail(email);
-            return Result(result);
+            return Result((UserResponse)result);
         }
 
         [HttpGet("byId/{id}")]
-        public async Task<IActionResult> ByIdAsync(string id) {
+        public async Task<IActionResult> ById(string id) {
             var result = await _service.GetById(id);
-            return Result(result);
+            return Result((UserResponse)result);
         }
 
         [HttpGet("all")]
-        public async Task<IActionResult> AllAsync() {
+        public async Task<IActionResult> List() {
             var result = await _service.ListUsers();
-            return Result(result);
+            return Result(result.ToList().ConvertAll(c => (UserResponse)c));
         }
 
         [AllowAnonymous]
         [HttpPost("auth")]
-        public async Task<IActionResult> AuthAsync([FromBody] AuthRequest request) {
+        public async Task<IActionResult> Auth([FromBody] AuthRequest request) {
             var result = await _service.Authenticate(request);
             return Result(result);
         }
