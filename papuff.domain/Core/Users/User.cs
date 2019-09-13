@@ -8,7 +8,6 @@ namespace papuff.domain.Core.Users {
     public class User : EntityBase {
 
         public User(string email, string password, string nick) {
-
             Email = email;
             Password = password;
             Nick = nick;
@@ -28,6 +27,12 @@ namespace papuff.domain.Core.Users {
         public List<Wallet> Wallets { get; set; } = new List<Wallet>();
         public List<Company> Companies { get; set; } = new List<Company>();
         public List<Document> Documents { get; set; } = new List<Document>();
+
+        public void Update(string email, string password, string nick) {
+            Email = email;
+            Password = password ?? Password;
+            Nick = nick ?? Nick;
+        }
 
         public void SetType(UserType type) {
             Type = type;

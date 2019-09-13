@@ -1,10 +1,10 @@
 ﻿using Newtonsoft.Json;
-using papuff.domain.Core.Enums;
 using System;
 
 namespace papuff.domain.Arguments.Generals {
     public class GeneralRequest {
 
+        public string Id { get; set; }
         public DateTime BirthDate { get; set; }
         public string Name { get; set; }
         public string Description { get; set; }

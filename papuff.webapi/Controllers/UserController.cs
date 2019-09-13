@@ -54,13 +54,13 @@ namespace papuff.webapi.Controllers {
         }
 
         [AllowAnonymous]
-        [HttpPost("register/customer")]
+        [HttpPost("customer")]
         public async Task<IActionResult> Customer([FromBody] UserRequest request) {
             await _service.Register(request, UserType.Customer);
             return Result(new BaseResponse());
         }
 
-        [HttpPost("register/operator")]
+        [HttpPost("operator")]
         public async Task<IActionResult> Operator([FromBody] UserRequest request) {
 
             // todo - pass into filter attribute
@@ -71,21 +71,21 @@ namespace papuff.webapi.Controllers {
             return Result(new BaseResponse());
         }
 
-        [HttpPost("general")]
-        public async Task<IActionResult> General([FromBody] GeneralRequest request) {
-            await _service.General(request.InjectAccount(LoggedLess, nameof(request.UserId)));
-            return Result(new BaseResponse());
-        }
-
-        [HttpPost("address")]
+        [HttpPost("register/address")]
         public async Task<IActionResult> Address([FromBody] AddressRequest request) {
             await _service.Address(request.InjectAccount(LoggedLess, nameof(request.OwnerId)));
             return Result(new BaseResponse());
         }
 
-        [HttpPost("wallet")]
+        [HttpPost("register/wallet")]
         public async Task<IActionResult> Wallet([FromBody] WalletRequest request) {
             await _service.Wallet(request.InjectAccount(LoggedLess, nameof(request.UserId)));
+            return Result(new BaseResponse());
+        }
+
+        [HttpPut("update")]
+        public async Task<IActionResult> Update([FromBody] UserRequest request) {
+            await _service.Update(request.InjectAccount(LoggedLess, nameof(request.UserId)));
             return Result(new BaseResponse());
         }
     }

@@ -1,6 +1,5 @@
 ﻿using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
-using papuff.domain.Arguments.Generals;
 using papuff.domain.Arguments.Security;
 using papuff.domain.Arguments.Users;
 using papuff.domain.Core.Enums;
@@ -10,7 +9,6 @@ using papuff.domain.Interfaces.Repositories;
 using papuff.domain.Interfaces.Services.Core;
 using papuff.domain.Security;
 using papuff.services.Services.Base;
-using papuff.services.Validators.Core.Generals;
 using papuff.services.Validators.Core.Users;
 using System;
 using System.Collections.Generic;
@@ -30,7 +28,6 @@ namespace papuff.services.Services.Core {
 
         private readonly IRepository<User> _repoUser;
         private readonly IRepository<Document> _repoDocument;
-        private readonly IRepository<General> _repoGeneral;
         private readonly IRepository<Address> _repoAddress;
         private readonly IRepository<Wallet> _repoWallet;
 
@@ -41,14 +38,12 @@ namespace papuff.services.Services.Core {
         public ServiceUser(IServiceProvider provider,
         IConfiguration appConf,
         IRepository<User> repoUser,
-        IRepository<General> repoGeneral,
         IRepository<Address> repoAddress,
         IRepository<Wallet> repoWallet,
         IRepository<Document> repoDocument) : base(provider) {
             _appConf = appConf;
-            _repoUser = repoUser; 
+            _repoUser = repoUser;
             _repoDocument = repoDocument;
-            _repoGeneral = repoGeneral;
             _repoAddress = repoAddress;
             _repoWallet = repoWallet;
         }
@@ -63,7 +58,7 @@ namespace papuff.services.Services.Core {
         /// <param name="id"></param>
         /// <returns></returns>
         public async Task<User> GetMe(string id) {
-            return await _repoUser.ById(false, id);
+            return await _repoUser.ById(true, id);
         }
 
         /// <summary>
@@ -72,16 +67,16 @@ namespace papuff.services.Services.Core {
         /// <param name="email"></param>
         /// <returns></returns>
         public async Task<User> GetByEmail(string email) {
-            return await _repoUser.By(false, m => m.Email
+            return await _repoUser.By(true, m => m.Email
                 .Equals(email, StringComparison.InvariantCultureIgnoreCase));
         }
 
         public async Task<User> GetById(string id) {
-            return await _repoUser.ById(false, id, i => i.General, i => i.Documents);
+            return await _repoUser.ById(true, id);
         }
 
         public async Task<IEnumerable<User>> ListUsers() {
-            return await _repoUser.ListBy(false, x => !x.IsDeleted);
+            return await _repoUser.ListBy(true, x => !x.IsDeleted);
         }
 
         #endregion
@@ -146,22 +141,6 @@ namespace papuff.services.Services.Core {
             }
         }
 
-        public async Task General(GeneralRequest request) {
-            var current = await _repoGeneral.By(false, u => u.UserId == request.UserId);
-
-            if (current is null) {
-                var general = new General(request.BirthDate, request.Name,
-                    request.Description, CurrentStage.Pending, request.UserId);
-
-                new GeneralValidator().Validate(general);
-                await _repoGeneral.Register(general);
-            } else {
-                current.Update(request.BirthDate, request.Name,
-                    request.Description);
-                _repoGeneral.Update(current);
-            }
-        }
-
         public async Task Address(AddressRequest request) {
             var current = await _repoAddress.By(false, u => u.UserId == request.OwnerId || u.CompanyId == request.OwnerId);
 
@@ -201,9 +180,31 @@ namespace papuff.services.Services.Core {
         public async Task Document(DocumentRequest request) {
             var current = await _repoDocument.By(false, u => u.Id == request.Id);
 
-            if(current is null) {
+            if (current is null) {
                 var document = new Document(request.Value, request.ImageUri, request.Type, request.UserId);
             }
+        }
+
+        #endregion
+
+        #region - update -
+
+        public async Task Update(UserRequest request) {
+
+            var id = request.Id ?? request.UserId;
+            var user = await _repoUser.ById(false, id);
+
+            _notify.When<ServiceUser>(user == null,
+                "Usuário não encontrado");
+
+            if (!string.IsNullOrEmpty(request.Password)) {
+                _notify.When<ServiceUser>(user.Password != request.Password,
+                "Senha inválida");
+
+                user.Update(request.Email, request.NewPassword, request.Nick);
+            }
+
+            _repoUser.Update(user);
         }
 
         #endregion

@@ -34,6 +34,7 @@ namespace papuff.bootstrap {
 
             services.AddScoped(typeof(IServiceUser), typeof(ServiceUser));
             services.AddScoped(typeof(IServiceEnterprise), typeof(ServiceEnterprise));
+            services.AddScoped(typeof(IServiceGeneral), typeof(ServiceGeneral));
 
             #endregion
 
