@@ -20,6 +20,6 @@ namespace papuff.domain.Arguments.Users {
         public string PostalCode { get; set; }
 
         [JsonIgnore]
-        public string OwnerId { get; set; }
+        public string UserId { get; set; }
     }
 }

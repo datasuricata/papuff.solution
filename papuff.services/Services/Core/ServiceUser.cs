@@ -3,7 +3,6 @@ using Microsoft.IdentityModel.Tokens;
 using papuff.domain.Arguments.Security;
 using papuff.domain.Arguments.Users;
 using papuff.domain.Core.Enums;
-using papuff.domain.Core.Generals;
 using papuff.domain.Core.Users;
 using papuff.domain.Interfaces.Repositories;
 using papuff.domain.Interfaces.Services.Core;
@@ -27,8 +26,6 @@ namespace papuff.services.Services.Core {
         private readonly IConfiguration _appConf;
 
         private readonly IRepository<User> _repoUser;
-        private readonly IRepository<Document> _repoDocument;
-        private readonly IRepository<Address> _repoAddress;
         private readonly IRepository<Wallet> _repoWallet;
 
         #endregion
@@ -38,13 +35,9 @@ namespace papuff.services.Services.Core {
         public ServiceUser(IServiceProvider provider,
         IConfiguration appConf,
         IRepository<User> repoUser,
-        IRepository<Address> repoAddress,
-        IRepository<Wallet> repoWallet,
-        IRepository<Document> repoDocument) : base(provider) {
+        IRepository<Wallet> repoWallet) : base(provider) {
             _appConf = appConf;
             _repoUser = repoUser;
-            _repoDocument = repoDocument;
-            _repoAddress = repoAddress;
             _repoWallet = repoWallet;
         }
 
@@ -141,25 +134,6 @@ namespace papuff.services.Services.Core {
             }
         }
 
-        public async Task Address(AddressRequest request) {
-            var current = await _repoAddress.By(false, u => u.UserId == request.OwnerId || u.CompanyId == request.OwnerId);
-
-            if (current is null) {
-                var address = new Address(request.Building, request.Number, request.Complement,
-                    request.AddressLine, request.District, request.City, request.StateProvince,
-                    request.Country, request.PostalCode, request.OwnerId, false);
-
-                new AddressValidator().Validate(address);
-                await _repoAddress.Register(address);
-            } else {
-                current.Update(request.Building, request.Number, request.Complement,
-                    request.AddressLine, request.District, request.City, request.StateProvince,
-                    request.Country, request.PostalCode);
-
-                _repoAddress.Update(current);
-            }
-        }
-
         public async Task Wallet(WalletRequest request) {
             var current = await _repoWallet.By(false, u => u.Id == request.Id);
 
@@ -174,14 +148,6 @@ namespace papuff.services.Services.Core {
                     request.Document, request.DateDue, request.IsDefault);
 
                 _repoWallet.Update(current);
-            }
-        }
-
-        public async Task Document(DocumentRequest request) {
-            var current = await _repoDocument.By(false, u => u.Id == request.Id);
-
-            if (current is null) {
-                var document = new Document(request.Value, request.ImageUri, request.Type, request.UserId);
             }
         }
 

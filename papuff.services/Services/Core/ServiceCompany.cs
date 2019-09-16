@@ -12,12 +12,12 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace papuff.services.Services.Core {
-    public class ServiceEnterprise : ServiceBase, IServiceEnterprise {
+    public class ServiceCompany : ServiceBase, IServiceCompany {
 
         private readonly IRepository<Company> _repoCompany;
         private readonly IRepository<Address> _repoAddress;
 
-        public ServiceEnterprise(IServiceProvider provider, 
+        public ServiceCompany(IServiceProvider provider, 
             IRepository<Address> repoAddress,
             IRepository<Company> repoCompany) : base(provider) {
             _repoAddress = repoAddress;

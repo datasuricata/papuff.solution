@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 namespace papuff.domain.Interfaces.Services.Core {
-    public interface IServiceEnterprise {
+    public interface IServiceCompany {
 
         Task<Company> GetById(string id);
         Task<IEnumerable<Company>> GetByUser(string logged);

@@ -71,12 +71,6 @@ namespace papuff.webapi.Controllers {
             return Result(new BaseResponse());
         }
 
-        [HttpPost("register/address")]
-        public async Task<IActionResult> Address([FromBody] AddressRequest request) {
-            await _service.Address(request.InjectAccount(LoggedLess, nameof(request.OwnerId)));
-            return Result(new BaseResponse());
-        }
-
         [HttpPost("register/wallet")]
         public async Task<IActionResult> Wallet([FromBody] WalletRequest request) {
             await _service.Wallet(request.InjectAccount(LoggedLess, nameof(request.UserId)));

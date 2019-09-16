@@ -22,6 +22,12 @@ namespace papuff.domain.Core.Generals {
 
         protected Document() { }
 
+        public void Update(string value, string imageUri, DocumentType type) {
+            Value = value ?? Value;
+            ImageUri = imageUri ?? ImageUri;
+            Type = type;
+        }
+
         public void PadLock() {
             Aproved = !Aproved;
         }
