@@ -37,6 +37,7 @@ namespace papuff.bootstrap {
             services.AddScoped(typeof(IServiceGeneral), typeof(ServiceGeneral));
             services.AddScoped(typeof(IServiceAddress), typeof(ServiceAddress));
             services.AddScoped(typeof(IServiceDocument), typeof(ServiceDocument));
+            services.AddScoped(typeof(IServiceWallet), typeof(ServiceWallet));
 
             #endregion
 

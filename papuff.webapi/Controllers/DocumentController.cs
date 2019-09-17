@@ -38,15 +38,27 @@ namespace papuff.webapi.Controllers {
             return Result(result.ToList().ConvertAll(e => (DocumentResponse)e));
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] DocumentRequest request) {
-            await _service.Register(request.InjectAccount(LoggedLess, nameof(request.UserId)));
+        [HttpPost("create")]
+        public async Task<IActionResult> Create([FromBody] DocumentRequest request) {
+            await _service.Create(request.InjectAccount(LoggedLess, nameof(request.UserId)));
             return Result(new BaseResponse());
         }
 
         [HttpPut("update")]
         public async Task<IActionResult> Update([FromBody] DocumentRequest request) {
             await _service.Update(request.InjectAccount(LoggedLess, nameof(request.UserId)));
+            return Result(new BaseResponse());
+        }
+
+        [HttpPut("delete/{id}")]
+        public async Task<IActionResult> Delete(string id) {
+            await _service.Delete(id);
+            return Result(new BaseResponse());
+        }
+
+        [HttpPut("padLock/{id}")]
+        public async Task<IActionResult> PadLock(string id) {
+            await _service.PadLock(id);
             return Result(new BaseResponse());
         }
     }

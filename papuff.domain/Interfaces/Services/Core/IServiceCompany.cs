@@ -11,7 +11,7 @@ namespace papuff.domain.Interfaces.Services.Core {
         Task<IEnumerable<Company>> GetByUser(string logged);
         Task<IEnumerable<Company>> GetCompanies();
 
-        Task Register(CompanyRequest request);
+        Task Create(CompanyRequest request);
         Task Address(AddressRequest request);
     }
 }

@@ -7,8 +7,9 @@ namespace papuff.domain.Interfaces.Services.Core {
     public interface IServiceDocument {
         Task<Document> GetById(string id);
         Task<IEnumerable<Document>> GetByUser(string logged);
-        Task Register(DocumentRequest request);
+        Task Create(DocumentRequest request);
         Task Update(DocumentRequest request);
         Task PadLock(string id);
+        Task Delete(string id);
     }
 }

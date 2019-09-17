@@ -23,10 +23,10 @@ namespace papuff.services.Services.Core {
         }
 
         public async Task<IEnumerable<Document>> GetByUser(string logged) {
-            return await _repoDocument.ListBy(true, a => a.UserId == logged);
+            return await _repoDocument.ListBy(true, a => a.UserId == logged && !a.IsDeleted);
         }
 
-        public async Task Register(DocumentRequest request) {
+        public async Task Create(DocumentRequest request) {
             var doc = new Document(request.Value, request.ImageUri, request.Type, request.UserId);
             _notify.When<ServiceDocument>(_repoDocument.Exist(d => d.Value == request.Value),
                 "Já existe um documento com os mesmos dados");
@@ -47,7 +47,12 @@ namespace papuff.services.Services.Core {
         public async Task PadLock(string id) {
             var doc = await _repoDocument.ById(false, id);
             doc.PadLock();
+            _repoDocument.Update(doc);
+        }
 
+        public async Task Delete(string id) {
+            var doc = await _repoDocument.ById(false, id);
+            doc.IsDeleted = true;
             _repoDocument.Update(doc);
         }
     }

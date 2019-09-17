@@ -37,8 +37,8 @@ namespace papuff.webapi.Controllers {
             return Result((GeneralResponse)result);
         }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> General([FromBody] GeneralRequest request) {
+        [HttpPost("create")]
+        public async Task<IActionResult> Create([FromBody] GeneralRequest request) {
             await _service.General(request.InjectAccount(LoggedLess, nameof(request.UserId)));
             return Result(new BaseResponse());
         }

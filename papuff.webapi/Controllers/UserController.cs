@@ -56,7 +56,7 @@ namespace papuff.webapi.Controllers {
         [AllowAnonymous]
         [HttpPost("customer")]
         public async Task<IActionResult> Customer([FromBody] UserRequest request) {
-            await _service.Register(request, UserType.Customer);
+            await _service.Create(request, UserType.Customer);
             return Result(new BaseResponse());
         }
 
@@ -67,13 +67,7 @@ namespace papuff.webapi.Controllers {
             _notify.When<UserController>(Logged.Type == UserType.Root, 
                 "Você não possui privilégio.");
 
-            await _service.Register(request, UserType.Operator);
-            return Result(new BaseResponse());
-        }
-
-        [HttpPost("register/wallet")]
-        public async Task<IActionResult> Wallet([FromBody] WalletRequest request) {
-            await _service.Wallet(request.InjectAccount(LoggedLess, nameof(request.UserId)));
+            await _service.Create(request, UserType.Operator);
             return Result(new BaseResponse());
         }
 

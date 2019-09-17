@@ -114,9 +114,7 @@ namespace papuff.services.Services.Core {
 
         #endregion
 
-        #region - register -
-
-        public async Task Register(UserRequest request, UserType type) {
+        public async Task Create(UserRequest request, UserType type) {
             _notify.When<ServiceUser>(
                 _repoUser.Exist(u => u.Email.Equals(request.Email, StringComparison.InvariantCultureIgnoreCase)),
                 "Já existe um registro para este e-mail.");
@@ -133,27 +131,6 @@ namespace papuff.services.Services.Core {
                 await _repoUser.Register(user);
             }
         }
-
-        public async Task Wallet(WalletRequest request) {
-            var current = await _repoWallet.By(false, u => u.Id == request.Id);
-
-            if (current is null) {
-                var wallet = new Wallet(request.Type, request.Agency, request.Account,
-                    request.Document, request.DateDue, request.IsDefault, request.UserId);
-
-                new WalletValidator().Validate(wallet);
-                await _repoWallet.Register(wallet);
-            } else {
-                current.Update(request.Type, request.Agency, request.Account,
-                    request.Document, request.DateDue, request.IsDefault);
-
-                _repoWallet.Update(current);
-            }
-        }
-
-        #endregion
-
-        #region - update -
 
         public async Task Update(UserRequest request) {
 
@@ -172,7 +149,5 @@ namespace papuff.services.Services.Core {
 
             _repoUser.Update(user);
         }
-
-        #endregion
     }
 }

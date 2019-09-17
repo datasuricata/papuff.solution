@@ -24,7 +24,7 @@ namespace papuff.services.Services.Core {
             _repoCompany = repoCompany;
         }
 
-        public async Task Register(CompanyRequest request) {
+        public async Task Create(CompanyRequest request) {
             var company = new Company(request.Name, request.Email, request.SiteUri, request.CNPJ,
                 request.Tell, request.Registration, request.OpeningDate, request.UserId);
 
