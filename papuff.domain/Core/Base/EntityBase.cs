@@ -31,11 +31,11 @@ namespace papuff.domain.Core.Base {
         /// </summary>
         /// <param name="length">Use to substring length</param>
         /// <returns></returns>
-        public static string CustomHash(int length = 0) {
+        protected static string CustomHash(int length = 0) {
             return Guid.NewGuid().ToString().ToUpper().Replace("-", "").Substring(0, length);
         }
 
-        public static string LetterHash(int length) {
+        protected static string LetterHash(int length) {
             Random random = new Random();
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
             return new string(Enumerable.Repeat(chars, length)

@@ -1,5 +1,5 @@
 ﻿using papuff.domain.Arguments.Users;
-using papuff.domain.Core.Generals;
+using papuff.domain.Core.Users;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

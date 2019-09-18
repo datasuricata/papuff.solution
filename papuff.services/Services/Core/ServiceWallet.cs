@@ -1,9 +1,7 @@
-﻿using papuff.domain.Arguments.Users;
-using papuff.domain.Core.Users;
+﻿using papuff.domain.Core.Wallets;
 using papuff.domain.Interfaces.Repositories;
 using papuff.domain.Interfaces.Services.Core;
 using papuff.services.Services.Base;
-using papuff.services.Validators.Core.Users;
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
@@ -25,21 +23,6 @@ namespace papuff.services.Services.Core {
             return await _repoWallet.ListBy(true, a => a.UserId == logged && !a.IsDeleted);
         }
 
-        public async Task Wallet(WalletRequest request) {
-            var current = await _repoWallet.By(false, u => u.Id == request.Id);
-
-            if (current is null) {
-                var wallet = new Wallet(request.Type, request.Agency, request.Account,
-                    request.Document, request.DateDue, request.IsDefault, request.UserId);
-
-                new WalletValidator().Validate(wallet);
-                await _repoWallet.Register(wallet);
-            } else {
-                current.Update(request.Type, request.Agency, request.Account,
-                    request.Document, request.DateDue, request.IsDefault);
-
-                _repoWallet.Update(current);
-            }
-        }
+        //public async Task Rec
     }
 }

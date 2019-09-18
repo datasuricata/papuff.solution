@@ -4,6 +4,7 @@ using papuff.domain.Arguments.Security;
 using papuff.domain.Arguments.Users;
 using papuff.domain.Core.Enums;
 using papuff.domain.Core.Users;
+using papuff.domain.Core.Wallets;
 using papuff.domain.Interfaces.Repositories;
 using papuff.domain.Interfaces.Services.Core;
 using papuff.domain.Security;

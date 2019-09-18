@@ -38,10 +38,10 @@ namespace papuff.webapi.Controllers {
             return Result(result.ToList().ConvertAll(e => (WalletResponse)e));
         }
 
-        [HttpPost("create")]
-        public async Task<IActionResult> Create([FromBody] WalletRequest request) {
-            await _service.Wallet(request.InjectAccount(LoggedLess, nameof(request.UserId)));
-            return Result(new BaseResponse());
-        }
+        //[HttpPost("create")]
+        //public async Task<IActionResult> Create([FromBody] WalletRequest request) {
+        //    await _service.Wallet(request.InjectAccount(LoggedLess, nameof(request.UserId)));
+        //    return Result(new BaseResponse());
+        //}
     }
 }

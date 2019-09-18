@@ -54,13 +54,13 @@ namespace papuff.datainfra.Seeder {
                     var a_u9999 = new Address(BuildingType.Commercial, 000, 0, "Vale Encantado", "Paradise", "Grin Wood", "WZ", "System", "00000000", u9999.Id, false);
                     context.Addresses.AddRange(a_u0001, a_u0002, a_u0003, a_u0004, a_u0005, a_u0006, a_u9999);
 
-                    var w_u0001 = new Wallet(PaymentType.Debit, "0000", "0000", "00000000", 15, true, u0001.Id);
-                    var w_u0002 = new Wallet(PaymentType.Credit, "0000", "0000", "00000000", 15, true, u0002.Id);
-                    var w_u0003 = new Wallet(PaymentType.Uninformed, "0000", "0000", "00000000", 15, true, u0003.Id);
-                    var w_u0004 = new Wallet(PaymentType.Uninformed, "0000", "0000", "00000000", 0, true, u0004.Id);
-                    var w_u0005 = new Wallet(PaymentType.Uninformed, "0000", "0000", "00000000", 0, true, u0005.Id);
-                    var w_u9999 = new Wallet(PaymentType.Uninformed, "0000", "0000", "00000000", 0, true, u9999.Id);
-                    context.Wallets.AddRange(w_u0001, w_u0002, w_u0003, w_u0004, w_u0005, w_u9999);
+                    //var w_u0001 = new Wallet(PaymentType.Debit, "0000", "0000", "00000000", 15, true, u0001.Id);
+                    //var w_u0002 = new Wallet(PaymentType.Credit, "0000", "0000", "00000000", 15, true, u0002.Id);
+                    //var w_u0003 = new Wallet(PaymentType.Uninformed, "0000", "0000", "00000000", 15, true, u0003.Id);
+                    //var w_u0004 = new Wallet(PaymentType.Uninformed, "0000", "0000", "00000000", 0, true, u0004.Id);
+                    //var w_u0005 = new Wallet(PaymentType.Uninformed, "0000", "0000", "00000000", 0, true, u0005.Id);
+                    //var w_u9999 = new Wallet(PaymentType.Uninformed, "0000", "0000", "00000000", 0, true, u9999.Id);
+                    //context.Wallets.AddRange(w_u0001, w_u0002, w_u0003, w_u0004, w_u0005, w_u9999);
 
                     var d_u0001 = new Document("0000", "www.google.com.br", DocumentType.RG, u0001.Id);
                     var d_u0002 = new Document("0000", "www.google.com.br", DocumentType.CPF, u0002.Id);

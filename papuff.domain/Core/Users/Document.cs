@@ -2,7 +2,7 @@
 using papuff.domain.Core.Enums;
 using papuff.domain.Core.Users;
 
-namespace papuff.domain.Core.Generals {
+namespace papuff.domain.Core.Users {
     public class Document : EntityBase {
 
         public string Value { get; set; }

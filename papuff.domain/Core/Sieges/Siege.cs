@@ -43,6 +43,9 @@ namespace papuff.domain.Core.Sieges {
         public double Latitude { get; private set; }
         public double Longitude { get; private set; }
 
+        // todo
+        public int OperationTime { get; private set; }
+
         public int Ads { get; private set; }
 
         public DateTime Available { get; private set; }
@@ -104,6 +107,9 @@ namespace papuff.domain.Core.Sieges {
 
         [NotMapped]
         public List<User> Users { get; set; } = new List<User>();
+
+        [NotMapped]
+        public List<Ticket> Tickets { get; set; } = new List<Ticket>();
 
         #endregion
 

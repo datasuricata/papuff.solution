@@ -1,12 +1,11 @@
 ﻿using papuff.domain.Arguments.Users;
-using papuff.domain.Core.Generals;
+using papuff.domain.Core.Users;
 using papuff.domain.Interfaces.Repositories;
 using papuff.domain.Interfaces.Services.Core;
 using papuff.services.Services.Base;
 using papuff.services.Validators.Core.Users;
 using System;
 using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace papuff.services.Services.Core {

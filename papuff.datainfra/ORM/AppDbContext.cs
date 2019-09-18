@@ -5,6 +5,7 @@ using papuff.domain.Core.Companies;
 using papuff.domain.Core.Generals;
 using papuff.domain.Core.Sieges;
 using papuff.domain.Core.Users;
+using papuff.domain.Core.Wallets;
 using System;
 using System.Linq;
 using System.Threading;
@@ -21,6 +22,8 @@ namespace papuff.datainfra.ORM {
         public DbSet<General> Generals { get; set; }
         public DbSet<Siege> Sieges { get; set; }
         public DbSet<Wallet> Wallets { get; set; }
+        public DbSet<Receipt> Receipts { get; set; }
+        public DbSet<Payment> Payments { get; set; }
         public DbSet<Company> Companies { get; set; }
 
         //public DbSet<Advertising> Advertisings { get; set; }

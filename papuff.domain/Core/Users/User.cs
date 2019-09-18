@@ -2,6 +2,7 @@
 using papuff.domain.Core.Companies;
 using papuff.domain.Core.Enums;
 using papuff.domain.Core.Generals;
+using papuff.domain.Core.Wallets;
 using System.Collections.Generic;
 
 namespace papuff.domain.Core.Users {
@@ -23,8 +24,8 @@ namespace papuff.domain.Core.Users {
 
         public Address Address { get; set; }
         public General General { get; set; }
+        public Wallet Wallet { get; set; } 
 
-        public List<Wallet> Wallets { get; set; } = new List<Wallet>();
         public List<Company> Companies { get; set; } = new List<Company>();
         public List<Document> Documents { get; set; } = new List<Document>();
 

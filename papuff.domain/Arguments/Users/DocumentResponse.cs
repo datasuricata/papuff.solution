@@ -1,5 +1,5 @@
 ﻿using papuff.domain.Core.Enums;
-using papuff.domain.Core.Generals;
+using papuff.domain.Core.Users;
 
 namespace papuff.domain.Arguments.Users {
     public class DocumentResponse {
