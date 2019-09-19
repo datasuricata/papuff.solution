@@ -43,7 +43,7 @@ namespace papuff.domain.Core.Sieges {
         public double Latitude { get; private set; }
         public double Longitude { get; private set; }
 
-        // todo
+        public int OperationIn { get; private set; }
         public int OperationTime { get; private set; }
 
         public int Ads { get; private set; }
@@ -193,6 +193,11 @@ namespace papuff.domain.Core.Sieges {
             Available = siege.Available;
             Start = siege.Start;
             Ended = siege.Ended;
+        }
+
+        public void SetOperation(int timeStart, int operationTime) {
+            OperationIn = timeStart;
+            OperationTime = OperationTime;
         }
 
         #endregion

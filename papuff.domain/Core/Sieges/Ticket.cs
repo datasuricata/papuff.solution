@@ -4,6 +4,8 @@ using papuff.domain.Core.Users;
 namespace papuff.domain.Core.Sieges {
     public class Ticket : EntityBase {
 
+        #region - attributes -
+
         public User User { get; set; }
         public string UserId { get; set; }
 
@@ -12,5 +14,28 @@ namespace papuff.domain.Core.Sieges {
 
         public string Hash { get; set; }
         public int DateDue { get; set; }
+
+        #endregion
+
+        #region - ctor -
+
+        protected Ticket() {
+        }
+
+        public Ticket(string siegeId, string hash, int dateDue) {
+            SiegeId = siegeId;
+            Hash = hash ?? CustomHash(16);
+            DateDue = dateDue;
+        }
+
+        #endregion
+
+        #region - methods -
+
+        public void ProcessTicket() => IsDeleted = true;
+
+        public void AssignTicket(string userId) => UserId = userId;
+
+        #endregion
     }
 }

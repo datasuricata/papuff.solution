@@ -13,7 +13,7 @@ namespace papuff.domain.Interfaces.Services.Core {
         IEnumerable<Siege> ListSieges();
         IEnumerable<Siege> ReceiveEntry(LocationRequest request, User logged);
 
-        Task Register(SiegeRequest request);
+        Task Create(SiegeRequest request);
         Task Close(string id, string logged);
 
         void ReceiveAds(AdsRequest request);

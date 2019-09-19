@@ -1,9 +1,7 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using papuff.domain.Arguments.Base;
 using papuff.domain.Arguments.Users;
 using papuff.domain.Interfaces.Services.Core;
-using papuff.domain.Security;
 using papuff.webapi.Controllers.Base;
 using System.Linq;
 using System.Threading.Tasks;

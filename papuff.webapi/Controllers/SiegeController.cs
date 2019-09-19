@@ -37,7 +37,7 @@ namespace papuff.webapi.Controllers {
 
         [HttpPost("create")]
         public async Task<IActionResult> Create([FromBody] SiegeRequest request) {
-            await _service.Register(request.InjectAccount(LoggedLess, nameof(request.OwnerId)));
+            await _service.Create(request.InjectAccount(LoggedLess, nameof(request.OwnerId)));
             return Result(new BaseResponse());
         }
 

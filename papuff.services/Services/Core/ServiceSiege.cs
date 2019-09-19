@@ -24,7 +24,8 @@ namespace papuff.services.Services.Core {
         #region - attributes -
 
         private readonly ISwapSiege _swap;
-        private readonly IRepository<Siege> _repository;
+        private readonly IRepository<Siege> _repoSiege;
+        private readonly IRepository<Ticket> _repoTicket;
         private readonly IHubContext<NotifyHub> _hub;
 
         #endregion
@@ -34,10 +35,12 @@ namespace papuff.services.Services.Core {
         public ServiceSiege(IServiceProvider provider,
             ISwapSiege swap,
             IHubContext<NotifyHub> hub,
-            IRepository<Siege> repository) : base(provider) {
+            IRepository<Ticket> repoTicket,
+            IRepository<Siege> repoSiege) : base(provider) {
             _swap = swap;
             _hub = hub;
-            _repository = repository;
+            _repoSiege = repoSiege;
+            _repoTicket = repoTicket;
         }
 
         #endregion
@@ -62,7 +65,7 @@ namespace papuff.services.Services.Core {
             return null;
         }
 
-        public async Task Register(SiegeRequest request) {
+        public async Task Create(SiegeRequest request) {
             new SiegeValidator().Validate(request);
 
             var siege = new Siege(request.Visibility, request.Title, request.Description,
@@ -83,12 +86,12 @@ namespace papuff.services.Services.Core {
 
                 siege.Init();
 
-                await _repository.Register(siege);
+                await _repoSiege.Register(siege);
             }
         }
 
         public async Task Close(string id, string logged) {
-            var siege = await _repository.ById(false, id);
+            var siege = await _repoSiege.ById(false, id);
 
             _notify.When<ServiceSiege>(siege.OwnerId != logged,
                 "Somente o proprietário pode fechar o grupo");
@@ -96,8 +99,12 @@ namespace papuff.services.Services.Core {
             if (_notify.IsValid) {
                 _swap.Close(id);
                 _swap.Sync(id, siege);
-                _repository.Update(siege);
+                _repoSiege.Update(siege);
             }
+        }
+
+        public async Task AssignTicket() {
+
         }
 
         public void ReceiveAds(AdsRequest request) {
