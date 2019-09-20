@@ -38,9 +38,28 @@ namespace papuff.services.Services.Swap {
         }
 
 
-        public void Add(Siege siege) {
+        public void AddSiege(Siege siege) {
             lock (_lock) {
                 Sieges.Add(siege);
+            }
+        }
+
+        public void AddAds(string id, Advertising advertising) {
+
+            var siege = GetById(id);
+
+            lock (_lock) {
+                siege.Advertising = advertising;
+                siege.Push(true);
+            }
+        }
+
+        public void AddTickets(string id, List<Ticket> tickets) {
+
+            var siege = GetById(id);
+
+            lock (_lock) {
+                siege.Tickets.AddRange(tickets);
             }
         }
 
@@ -68,16 +87,6 @@ namespace papuff.services.Services.Swap {
 
             lock (_lock) {
                 siege.Users.RemoveAll(u => u.Id == logged);
-            }
-        }
-
-        public void PushAds(string id, Advertising advertising) {
-
-            var siege = GetById(id);
-
-            lock (_lock) {
-                siege.Advertising = advertising;
-                siege.Push(true);
             }
         }
 

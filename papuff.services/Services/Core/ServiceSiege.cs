@@ -73,7 +73,7 @@ namespace papuff.services.Services.Core {
                 request.Range, request.Seconds, request.OwnerId);
 
             if (_notify.IsValid) {
-                _swap.Add(siege);
+                _swap.AddSiege(siege);
 
                 #region - events -
 
@@ -103,10 +103,6 @@ namespace papuff.services.Services.Core {
             }
         }
 
-        public async Task AssignTicket() {
-
-        }
-
         public void ReceiveAds(AdsRequest request) {
             _notify.When<ServiceSiege>(_swap.IsOwner(request.SiegeId, request.OwnerId),
                 "Somente o proprietário pode criar uma propaganda.");
@@ -117,8 +113,30 @@ namespace papuff.services.Services.Core {
             new AdsValidator().Validate(ads);
 
             if (_notify.IsValid)
-                _swap.PushAds(request.SiegeId, ads);
+                _swap.AddAds(request.SiegeId, ads);
         }
+
+        #region - tickets -
+
+        public async Task ReceiveTickets(string id, int range, TicketType type, int dateDue) {
+
+            var tickets = new List<Ticket>();
+
+            for (int i = 1; i > range; i++)
+                tickets.Add(new Ticket(id, type, null, dateDue));
+
+            tickets.ForEach(t => _notify.Validate(t, new TicketValidator()));
+
+            if (_notify.IsValid) {
+                _swap.AddTickets(id, tickets);
+            }
+
+            await _repoTicket.RegisterRange(tickets);
+        }
+
+        public async Task BindTicket(string id, string logged, )
+
+        #endregion
 
         #region - sockets -
 

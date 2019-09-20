@@ -69,6 +69,10 @@ namespace papuff.datainfra.Persistence {
             await context.Set<T>().AddAsync(entity);
         }
 
+        public virtual async Task RegisterRange(IEnumerable<T> entities) {
+            await context.Set<T>().AddRangeAsync(entities);
+        }
+
         public virtual async Task<IEnumerable<T>> List(bool readOnly, params Expression<Func<T, object>>[] includeProperties) {
             return await Queryable(readOnly, includeProperties).ToListAsync();
         }

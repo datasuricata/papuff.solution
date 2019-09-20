@@ -1,10 +1,15 @@
 ﻿using papuff.domain.Core.Base;
+using papuff.domain.Core.Enums;
 using papuff.domain.Core.Users;
+using System.Threading;
 
 namespace papuff.domain.Core.Sieges {
     public class Ticket : EntityBase {
 
         #region - attributes -
+
+        private Timer _audit;
+        private readonly object _lock = new object();
 
         public User User { get; set; }
         public string UserId { get; set; }
@@ -15,6 +20,8 @@ namespace papuff.domain.Core.Sieges {
         public string Hash { get; set; }
         public int DateDue { get; set; }
 
+        public TicketType Type { get; set; }
+
         #endregion
 
         #region - ctor -
@@ -22,7 +29,7 @@ namespace papuff.domain.Core.Sieges {
         protected Ticket() {
         }
 
-        public Ticket(string siegeId, string hash, int dateDue) {
+        public Ticket(string siegeId, TicketType type, string hash, int dateDue) {
             SiegeId = siegeId;
             Hash = hash ?? CustomHash(16);
             DateDue = dateDue;

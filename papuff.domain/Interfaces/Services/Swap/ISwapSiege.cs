@@ -10,11 +10,12 @@ namespace papuff.domain.Interfaces.Services.Swap {
         IEnumerable<Siege> ListAvaiables();
         IEnumerable<Siege> CheckIn(IEnumerable<Siege> sieges, User logged);
 
-        void Add(Siege siege);
+        void AddSiege(Siege siege);
         void Close(string id);
         void Sync(string id, Siege entity);
         void CheckOut(string id, string logged);
-        void PushAds(string id, Advertising advertising);
+        void AddAds(string id, Advertising advertising);
+        void AddTickets(string id, List<Ticket> tickets);
 
         bool IsOwner(string id, string OwnerId);
     }

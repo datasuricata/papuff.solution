@@ -1,5 +1,7 @@
 ﻿using Newtonsoft.Json;
 using papuff.domain.Core.Enums;
+using papuff.domain.Core.Sieges;
+using System.Collections.Generic;
 
 namespace papuff.domain.Arguments.Sieges {
     public class SiegeRequest {
