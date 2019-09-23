@@ -16,6 +16,7 @@ namespace papuff.domain.Interfaces.Services.Swap {
         void CheckOut(string id, string logged);
         void AddAds(string id, Advertising advertising);
         void AddTickets(string id, List<Ticket> tickets);
+        void AssignTicket(string id, string ticketId, string logged);
 
         bool IsOwner(string id, string OwnerId);
     }

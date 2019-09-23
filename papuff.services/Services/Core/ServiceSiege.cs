@@ -45,6 +45,8 @@ namespace papuff.services.Services.Core {
 
         #endregion
 
+        #region - siege -
+
         public Siege GetById(string id) => _swap.GetById(id);
 
         public IEnumerable<Siege> ListSieges() => _swap.ListSieges();
@@ -69,8 +71,8 @@ namespace papuff.services.Services.Core {
             new SiegeValidator().Validate(request);
 
             var siege = new Siege(request.Visibility, request.Title, request.Description,
-                request.ImageUri, request.Latitude, request.Longitude,
-                request.Range, request.Seconds, request.OwnerId);
+                request.ImageUri, request.Latitude, request.Longitude, request.Range, request.Seconds, 
+                request.OperationIn, request.OperationTime, request.OwnerId);
 
             if (_notify.IsValid) {
                 _swap.AddSiege(siege);
@@ -116,12 +118,13 @@ namespace papuff.services.Services.Core {
                 _swap.AddAds(request.SiegeId, ads);
         }
 
+        #endregion
+
         #region - tickets -
 
         public async Task ReceiveTickets(string id, int range, TicketType type, int dateDue) {
 
             var tickets = new List<Ticket>();
-
             for (int i = 1; i > range; i++)
                 tickets.Add(new Ticket(id, type, null, dateDue));
 
@@ -129,12 +132,31 @@ namespace papuff.services.Services.Core {
 
             if (_notify.IsValid) {
                 _swap.AddTickets(id, tickets);
+                await _repoTicket.RegisterRange(tickets);
             }
-
-            await _repoTicket.RegisterRange(tickets);
         }
 
-        public async Task BindTicket(string id, string logged, )
+        public async Task BindTicket(string id, string logged, TicketType type) {
+
+            var ticket = await _repoTicket.By(true, t => t.Type == type && t.SiegeId == id && string.IsNullOrEmpty(t.UserId));
+
+            #region - validator -
+
+            _notify.When<ServiceSiege>(ticket == null,
+                "Sem tickets disponiveis.");
+
+            _notify.When<ServiceSiege>(string.IsNullOrEmpty(logged),
+                "Sem usuário para ser vinculado");
+
+            #endregion
+
+            ticket.AssignTicket(logged);
+
+            if (_notify.IsValid) {
+                _swap.AssignTicket(id, ticket.Id, logged);
+                _repoTicket.Update(ticket);
+            }
+        }
 
         #endregion
 

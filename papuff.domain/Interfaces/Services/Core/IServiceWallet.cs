@@ -7,6 +7,11 @@ namespace papuff.domain.Interfaces.Services.Core {
     public interface IServiceWallet {
         Task<Wallet> GetById(string id);
         Task<IEnumerable<Wallet>> GetByUser(string logged);
-        //Task Wallet(WalletRequest request);
+
+        Task Wallet(string userId);
+        Task Receive(string walletId, ReceiptRequest param);
+
+        Task PaymentCreate(string walletId, PaymentRequest param);
+        Task PaymentDelete(string id);
     }
 }

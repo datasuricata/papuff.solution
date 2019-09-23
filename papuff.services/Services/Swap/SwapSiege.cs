@@ -63,6 +63,17 @@ namespace papuff.services.Services.Swap {
             }
         }
 
+        public void AssignTicket(string id, string ticketId, string logged) {
+
+            var siege = GetById(id);
+
+            var ticket = siege.Tickets.FirstOrDefault(x => x.Id == ticketId);
+
+            lock (_lock) {
+                ticket.AssignTicket(logged);
+            }
+        }
+
         public void Close(string id) {
 
             var siege = GetById(id);
@@ -89,7 +100,6 @@ namespace papuff.services.Services.Swap {
                 siege.Users.RemoveAll(u => u.Id == logged);
             }
         }
-
 
         public bool IsOwner(string id, string OwnerId) {
             return Sieges.Exists(s => s.Id == id && s.OwnerId == OwnerId);

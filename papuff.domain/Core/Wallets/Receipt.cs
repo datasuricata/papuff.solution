@@ -6,9 +6,7 @@ namespace papuff.domain.Core.Wallets {
 
         public string Agency { get; private set; }
         public string Account { get; private set; }
-
         public int DateDue { get; private set; }
-        public PaymentType Type { get; private set; }
 
         public string WalletId { get; set; }
         public Wallet Wallet { get; set; }
@@ -16,12 +14,17 @@ namespace papuff.domain.Core.Wallets {
         protected Receipt() {
         }
 
-        public Receipt(string agency, string account, int dateDue, PaymentType type, string walletId) {
+        public Receipt(string agency, string account, int dateDue, string walletId) {
             Agency = agency;
             Account = account;
             DateDue = dateDue;
-            Type = type;
             WalletId = walletId;
+        }
+
+        public void Update(string agency, string account, int dateDue) {
+            Agency = agency ?? Agency;
+            Account = account ?? Account;
+            DateDue = dateDue == 0 ? DateDue : dateDue;
         }
     }
 }

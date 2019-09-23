@@ -14,6 +14,8 @@ namespace papuff.domain.Arguments.Sieges {
         public double Longitude { get; set; }
         public double Range { get; set; }
         public int Seconds { get; set; }
+        public int OperationIn { get; set; }
+        public int OperationTime { get; set; }
 
         [JsonIgnore]
         public string OwnerId { get; set; }

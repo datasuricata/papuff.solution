@@ -117,7 +117,7 @@ namespace papuff.domain.Core.Sieges {
 
         protected Siege() { }
 
-        public Siege(VisibilityType visibility, string title, string description, string imageUri, double latitude, double longitude, double range, int seconds, string ownerId) {
+        public Siege(VisibilityType visibility, string title, string description, string imageUri, double latitude, double longitude, double range, int seconds, int operationIn, int operationTime, string ownerId) {
             Visibility = visibility;
             Title = title;
             Description = description;
@@ -125,6 +125,8 @@ namespace papuff.domain.Core.Sieges {
             Latitude = latitude;
             Longitude = longitude;
             Range = range;
+            OperationIn = operationIn;
+            OperationTime = OperationTime;
             Available = DateTime.UtcNow.AddSeconds(seconds);
             OwnerId = ownerId;
         }
