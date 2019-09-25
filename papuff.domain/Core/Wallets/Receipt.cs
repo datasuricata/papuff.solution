@@ -1,5 +1,4 @@
 ﻿using papuff.domain.Core.Base;
-using papuff.domain.Core.Enums;
 
 namespace papuff.domain.Core.Wallets {
     public class Receipt : EntityBase {

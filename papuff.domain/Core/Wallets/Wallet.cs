@@ -5,8 +5,7 @@ using System.Collections.Generic;
 namespace papuff.domain.Core.Wallets {
     public class Wallet : EntityBase {
 
-        public List<Payment> Payments = new List<Payment>();
-
+        public List<Payment> Payments { get; set; } = new List<Payment>();
         public Receipt Receipt { get; set; }
 
         public string UserId { get; set; }

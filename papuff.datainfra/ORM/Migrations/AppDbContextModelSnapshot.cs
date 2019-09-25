@@ -3,17 +3,15 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
-using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using papuff.datainfra.ORM;
 
-namespace papuff.datainfra.Migrations
+namespace papuff.datainfra.ORM.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20190918192856_000003")]
-    partial class _000003
+    partial class AppDbContextModelSnapshot : ModelSnapshot
     {
-        protected override void BuildTargetModel(ModelBuilder modelBuilder)
+        protected override void BuildModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -108,6 +106,10 @@ namespace papuff.datainfra.Migrations
                     b.Property<double>("Latitude");
 
                     b.Property<double>("Longitude");
+
+                    b.Property<int>("OperationIn");
+
+                    b.Property<int>("OperationTime");
 
                     b.Property<string>("OwnerId");
 
@@ -247,6 +249,8 @@ namespace papuff.datainfra.Migrations
 
                     b.Property<bool>("IsDeleted");
 
+                    b.Property<int>("Type");
+
                     b.Property<DateTimeOffset?>("UpdatedAt");
 
                     b.Property<string>("WalletId");
@@ -272,8 +276,6 @@ namespace papuff.datainfra.Migrations
                     b.Property<int>("DateDue");
 
                     b.Property<bool>("IsDeleted");
-
-                    b.Property<int>("Type");
 
                     b.Property<DateTimeOffset?>("UpdatedAt");
 
@@ -352,7 +354,7 @@ namespace papuff.datainfra.Migrations
             modelBuilder.Entity("papuff.domain.Core.Wallets.Payment", b =>
                 {
                     b.HasOne("papuff.domain.Core.Wallets.Wallet", "Wallet")
-                        .WithMany()
+                        .WithMany("Payments")
                         .HasForeignKey("WalletId");
                 });
 

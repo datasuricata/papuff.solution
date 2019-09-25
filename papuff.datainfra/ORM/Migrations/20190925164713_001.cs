@@ -1,9 +1,9 @@
 ﻿using System;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace papuff.datainfra.Migrations
+namespace papuff.datainfra.ORM.Migrations
 {
-    public partial class migration_000001 : Migration
+    public partial class _001 : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -70,6 +70,7 @@ namespace papuff.datainfra.Migrations
                     IsDeleted = table.Column<bool>(nullable: false),
                     Value = table.Column<string>(nullable: true),
                     ImageUri = table.Column<string>(nullable: true),
+                    Aproved = table.Column<bool>(nullable: false),
                     Type = table.Column<int>(nullable: false),
                     UserId = table.Column<string>(nullable: true)
                 },
@@ -128,6 +129,8 @@ namespace papuff.datainfra.Migrations
                     Range = table.Column<double>(nullable: false),
                     Latitude = table.Column<double>(nullable: false),
                     Longitude = table.Column<double>(nullable: false),
+                    OperationIn = table.Column<int>(nullable: false),
+                    OperationTime = table.Column<int>(nullable: false),
                     Ads = table.Column<int>(nullable: false),
                     Available = table.Column<DateTime>(nullable: false),
                     Start = table.Column<DateTime>(nullable: true),
@@ -155,12 +158,6 @@ namespace papuff.datainfra.Migrations
                     CreatedAt = table.Column<DateTimeOffset>(nullable: true),
                     UpdatedAt = table.Column<DateTimeOffset>(nullable: true),
                     IsDeleted = table.Column<bool>(nullable: false),
-                    Type = table.Column<int>(nullable: false),
-                    Agency = table.Column<string>(nullable: true),
-                    Account = table.Column<string>(nullable: true),
-                    Document = table.Column<string>(nullable: true),
-                    DateDue = table.Column<int>(nullable: false),
-                    IsDefault = table.Column<bool>(nullable: false),
                     UserId = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -215,6 +212,62 @@ namespace papuff.datainfra.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "Payment",
+                schema: "Core",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(nullable: true),
+                    UpdatedAt = table.Column<DateTimeOffset>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    Card = table.Column<string>(nullable: true),
+                    Expiration = table.Column<DateTime>(nullable: false),
+                    Type = table.Column<int>(nullable: false),
+                    Code = table.Column<int>(nullable: false),
+                    DateDue = table.Column<int>(nullable: false),
+                    Document = table.Column<string>(nullable: true),
+                    IsDefault = table.Column<bool>(nullable: false),
+                    WalletId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Payment", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Payment_Wallet_WalletId",
+                        column: x => x.WalletId,
+                        principalSchema: "Core",
+                        principalTable: "Wallet",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "Receipt",
+                schema: "Core",
+                columns: table => new
+                {
+                    Id = table.Column<string>(nullable: false),
+                    CreatedAt = table.Column<DateTimeOffset>(nullable: true),
+                    UpdatedAt = table.Column<DateTimeOffset>(nullable: true),
+                    IsDeleted = table.Column<bool>(nullable: false),
+                    Agency = table.Column<string>(nullable: true),
+                    Account = table.Column<string>(nullable: true),
+                    DateDue = table.Column<int>(nullable: false),
+                    WalletId = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Receipt", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_Receipt_Wallet_WalletId",
+                        column: x => x.WalletId,
+                        principalSchema: "Core",
+                        principalTable: "Wallet",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                });
+
             migrationBuilder.CreateIndex(
                 name: "IX_Address_CompanyId",
                 schema: "Core",
@@ -252,6 +305,20 @@ namespace papuff.datainfra.Migrations
                 filter: "[UserId] IS NOT NULL");
 
             migrationBuilder.CreateIndex(
+                name: "IX_Payment_WalletId",
+                schema: "Core",
+                table: "Payment",
+                column: "WalletId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Receipt_WalletId",
+                schema: "Core",
+                table: "Receipt",
+                column: "WalletId",
+                unique: true,
+                filter: "[WalletId] IS NOT NULL");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_Siege_OwnerId",
                 schema: "Core",
                 table: "Siege",
@@ -261,7 +328,9 @@ namespace papuff.datainfra.Migrations
                 name: "IX_Wallet_UserId",
                 schema: "Core",
                 table: "Wallet",
-                column: "UserId");
+                column: "UserId",
+                unique: true,
+                filter: "[UserId] IS NOT NULL");
         }
 
         protected override void Down(MigrationBuilder migrationBuilder)
@@ -279,15 +348,23 @@ namespace papuff.datainfra.Migrations
                 schema: "Core");
 
             migrationBuilder.DropTable(
+                name: "Payment",
+                schema: "Core");
+
+            migrationBuilder.DropTable(
+                name: "Receipt",
+                schema: "Core");
+
+            migrationBuilder.DropTable(
                 name: "Siege",
                 schema: "Core");
 
             migrationBuilder.DropTable(
-                name: "Wallet",
+                name: "Company",
                 schema: "Core");
 
             migrationBuilder.DropTable(
-                name: "Company",
+                name: "Wallet",
                 schema: "Core");
 
             migrationBuilder.DropTable(

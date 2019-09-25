@@ -7,11 +7,11 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using papuff.datainfra.ORM;
 
-namespace papuff.datainfra.Migrations
+namespace papuff.datainfra.ORM.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20190916162649_migration_000002")]
-    partial class migration_000002
+    [Migration("20190925164713_001")]
+    partial class _001
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -54,34 +54,6 @@ namespace papuff.datainfra.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("Company");
-                });
-
-            modelBuilder.Entity("papuff.domain.Core.Generals.Document", b =>
-                {
-                    b.Property<string>("Id")
-                        .ValueGeneratedOnAdd();
-
-                    b.Property<bool>("Aproved");
-
-                    b.Property<DateTimeOffset?>("CreatedAt");
-
-                    b.Property<string>("ImageUri");
-
-                    b.Property<bool>("IsDeleted");
-
-                    b.Property<int>("Type");
-
-                    b.Property<DateTimeOffset?>("UpdatedAt");
-
-                    b.Property<string>("UserId");
-
-                    b.Property<string>("Value");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Document");
                 });
 
             modelBuilder.Entity("papuff.domain.Core.Generals.General", b =>
@@ -136,6 +108,10 @@ namespace papuff.datainfra.Migrations
                     b.Property<double>("Latitude");
 
                     b.Property<double>("Longitude");
+
+                    b.Property<int>("OperationIn");
+
+                    b.Property<int>("OperationTime");
 
                     b.Property<string>("OwnerId");
 
@@ -202,6 +178,34 @@ namespace papuff.datainfra.Migrations
                     b.ToTable("Address");
                 });
 
+            modelBuilder.Entity("papuff.domain.Core.Users.Document", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<bool>("Aproved");
+
+                    b.Property<DateTimeOffset?>("CreatedAt");
+
+                    b.Property<string>("ImageUri");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<int>("Type");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt");
+
+                    b.Property<string>("UserId");
+
+                    b.Property<string>("Value");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Document");
+                });
+
             modelBuilder.Entity("papuff.domain.Core.Users.User", b =>
                 {
                     b.Property<string>("Id")
@@ -226,7 +230,41 @@ namespace papuff.datainfra.Migrations
                     b.ToTable("User");
                 });
 
-            modelBuilder.Entity("papuff.domain.Core.Users.Wallet", b =>
+            modelBuilder.Entity("papuff.domain.Core.Wallets.Payment", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<string>("Card");
+
+                    b.Property<int>("Code");
+
+                    b.Property<DateTimeOffset?>("CreatedAt");
+
+                    b.Property<int>("DateDue");
+
+                    b.Property<string>("Document");
+
+                    b.Property<DateTime>("Expiration");
+
+                    b.Property<bool>("IsDefault");
+
+                    b.Property<bool>("IsDeleted");
+
+                    b.Property<int>("Type");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt");
+
+                    b.Property<string>("WalletId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WalletId");
+
+                    b.ToTable("Payment");
+                });
+
+            modelBuilder.Entity("papuff.domain.Core.Wallets.Receipt", b =>
                 {
                     b.Property<string>("Id")
                         .ValueGeneratedOnAdd();
@@ -239,13 +277,29 @@ namespace papuff.datainfra.Migrations
 
                     b.Property<int>("DateDue");
 
-                    b.Property<string>("Document");
-
-                    b.Property<bool>("IsDefault");
-
                     b.Property<bool>("IsDeleted");
 
-                    b.Property<int>("Type");
+                    b.Property<DateTimeOffset?>("UpdatedAt");
+
+                    b.Property<string>("WalletId");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("WalletId")
+                        .IsUnique()
+                        .HasFilter("[WalletId] IS NOT NULL");
+
+                    b.ToTable("Receipt");
+                });
+
+            modelBuilder.Entity("papuff.domain.Core.Wallets.Wallet", b =>
+                {
+                    b.Property<string>("Id")
+                        .ValueGeneratedOnAdd();
+
+                    b.Property<DateTimeOffset?>("CreatedAt");
+
+                    b.Property<bool>("IsDeleted");
 
                     b.Property<DateTimeOffset?>("UpdatedAt");
 
@@ -253,7 +307,9 @@ namespace papuff.datainfra.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("UserId");
+                    b.HasIndex("UserId")
+                        .IsUnique()
+                        .HasFilter("[UserId] IS NOT NULL");
 
                     b.ToTable("Wallet");
                 });
@@ -262,13 +318,6 @@ namespace papuff.datainfra.Migrations
                 {
                     b.HasOne("papuff.domain.Core.Users.User", "User")
                         .WithMany("Companies")
-                        .HasForeignKey("UserId");
-                });
-
-            modelBuilder.Entity("papuff.domain.Core.Generals.Document", b =>
-                {
-                    b.HasOne("papuff.domain.Core.Users.User", "User")
-                        .WithMany("Documents")
                         .HasForeignKey("UserId");
                 });
 
@@ -297,11 +346,32 @@ namespace papuff.datainfra.Migrations
                         .HasForeignKey("papuff.domain.Core.Users.Address", "UserId");
                 });
 
-            modelBuilder.Entity("papuff.domain.Core.Users.Wallet", b =>
+            modelBuilder.Entity("papuff.domain.Core.Users.Document", b =>
                 {
                     b.HasOne("papuff.domain.Core.Users.User", "User")
-                        .WithMany("Wallets")
+                        .WithMany("Documents")
                         .HasForeignKey("UserId");
+                });
+
+            modelBuilder.Entity("papuff.domain.Core.Wallets.Payment", b =>
+                {
+                    b.HasOne("papuff.domain.Core.Wallets.Wallet", "Wallet")
+                        .WithMany("Payments")
+                        .HasForeignKey("WalletId");
+                });
+
+            modelBuilder.Entity("papuff.domain.Core.Wallets.Receipt", b =>
+                {
+                    b.HasOne("papuff.domain.Core.Wallets.Wallet", "Wallet")
+                        .WithOne("Receipt")
+                        .HasForeignKey("papuff.domain.Core.Wallets.Receipt", "WalletId");
+                });
+
+            modelBuilder.Entity("papuff.domain.Core.Wallets.Wallet", b =>
+                {
+                    b.HasOne("papuff.domain.Core.Users.User", "User")
+                        .WithOne("Wallet")
+                        .HasForeignKey("papuff.domain.Core.Wallets.Wallet", "UserId");
                 });
 #pragma warning restore 612, 618
         }

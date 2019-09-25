@@ -30,8 +30,8 @@ namespace papuff.services.Services.Core {
                 i => i.Payments);
         }
 
-        public async Task<IEnumerable<Wallet>> GetByUser(string userId) {
-            return await _repoWallet.ListBy(true, a => a.UserId == userId && !a.IsDeleted, 
+        public async Task<Wallet> GetByUser(string userId) {
+            return await _repoWallet.By(true, a => a.UserId == userId, 
                 i => i.Receipt, 
                 i => i.Payments);
         }
@@ -47,7 +47,7 @@ namespace papuff.services.Services.Core {
             }
         }
 
-        public async Task Receive(string walletId, ReceiptRequest param) {
+        public async Task Receipt(string walletId, ReceiptRequest param) {
             var current = await _repoReceipt.By(false, r => r.WalletId == walletId);
 
             if(current is null) {

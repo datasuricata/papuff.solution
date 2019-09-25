@@ -27,11 +27,11 @@ namespace papuff.datainfra.Persistence {
 
         #region - methods -
 
-        public virtual IQueryable<T> Queryable(bool readOnly, params Expression<Func<T, object>>[] includeProperties) {
+        public virtual IQueryable<T> Queryable(bool readOnly, params Expression<Func<T, object>>[] includes) {
             IQueryable<T> query = context.Set<T>();
 
-            if (includeProperties.Any())
-                query = Include(context.Set<T>(), includeProperties);
+            if (includes.Any())
+                query = Include(context.Set<T>(), includes);
 
             if (readOnly)
                 query.AsNoTracking();
@@ -45,9 +45,9 @@ namespace papuff.datainfra.Persistence {
             return entity;
         }
 
-        public virtual bool Exist(Func<T, bool> where, params Expression<Func<T, object>>[] includeProperties) {
-            if (includeProperties.Any())
-                return Include(context.Set<T>(), includeProperties).Any(where);
+        public virtual bool Exist(Func<T, bool> where, params Expression<Func<T, object>>[] includes) {
+            if (includes.Any())
+                return Include(context.Set<T>(), includes).Any(where);
             return context.Set<T>().Any(where);
         }
 
@@ -55,14 +55,14 @@ namespace papuff.datainfra.Persistence {
 
         #region - async -
 
-        public virtual async Task<T> ById(bool readOnly, string id, params Expression<Func<T, object>>[] includeProperties) {
-            if (includeProperties.Any())
-                return await Queryable(readOnly, includeProperties).FirstOrDefaultAsync(x => x.Id == id);
+        public virtual async Task<T> ById(bool readOnly, string id, params Expression<Func<T, object>>[] includes) {
+            if (includes.Any())
+                return await Queryable(readOnly, includes).FirstOrDefaultAsync(x => x.Id == id);
             return await context.Set<T>().FindAsync(id);
         }
 
-        public virtual async Task<T> By(bool readOnly, Expression<Func<T, bool>> where, params Expression<Func<T, object>>[] includeProperties) {
-            return await Queryable(readOnly, includeProperties).FirstOrDefaultAsync(where);
+        public virtual async Task<T> By(bool readOnly, Expression<Func<T, bool>> where, params Expression<Func<T, object>>[] includes) {
+            return await Queryable(readOnly, includes).FirstOrDefaultAsync(where);
         }
 
         public virtual async Task Register(T entity) {
@@ -77,8 +77,8 @@ namespace papuff.datainfra.Persistence {
             return await Queryable(readOnly, includeProperties).ToListAsync();
         }
 
-        public virtual async Task<IEnumerable<T>> ListBy(bool readOnly, Expression<Func<T, bool>> where, params Expression<Func<T, object>>[] includeProperties) {
-            return await Queryable(readOnly, includeProperties).Where(where).ToListAsync();
+        public virtual async Task<IEnumerable<T>> ListBy(bool readOnly, Expression<Func<T, bool>> where, params Expression<Func<T, object>>[] includes) {
+            return await Queryable(readOnly, includes).Where(where).ToListAsync();
         }
 
         #endregion
@@ -89,10 +89,10 @@ namespace papuff.datainfra.Persistence {
         /// Realiza include populando o objeto passado por parametro
         /// </summary>
         /// <param name="query">Informe o objeto do tipo IQuerable</param>
-        /// <param name="includeProperties">Ínforme o array de expressões que deseja incluir</param>
+        /// <param name="includes">Ínforme o array de expressões que deseja incluir</param>
         /// <returns></returns>
-        private IQueryable<T> Include(IQueryable<T> query, params Expression<Func<T, object>>[] includeProperties) {
-            foreach (var property in includeProperties)
+        private IQueryable<T> Include(IQueryable<T> query, params Expression<Func<T, object>>[] includes) {
+            foreach (var property in includes)
                 query = query.Include(property);
 
             return query;

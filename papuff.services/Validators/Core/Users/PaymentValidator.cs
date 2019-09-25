@@ -5,16 +5,16 @@ namespace papuff.services.Validators.Core.Users {
     public class PaymentValidator : AbstractValidator<Payment> {
         public PaymentValidator() {
             RuleFor(r => r.WalletId)
-                .NotEmpty().NotNull().WithMessage("");
+                .NotNull().NotEmpty().WithMessage("Carteira de destino é obrigatória, contate o suporte.");
 
             RuleFor(r => r.Card)
-                .NotEmpty().NotNull().WithMessage("");
+                .NotNull().NotEmpty().WithMessage("Informe o número do cartão.");
 
             RuleFor(r => r.Code)
-                .NotEmpty().NotNull().WithMessage("");
+                .NotNull().NotEmpty().WithMessage("Informe o código de segurança.");
 
             RuleFor(r => r.Document)
-                .NotEmpty().NotNull().WithMessage("");
+                .NotNull().NotEmpty().WithMessage("Cpf é obrigatório.");
         }
     }
 }
