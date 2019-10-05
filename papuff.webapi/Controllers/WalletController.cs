@@ -42,15 +42,15 @@ namespace papuff.webapi.Controllers {
             return Result(new BaseResponse());
         }
 
-        [HttpPost("payment/{id}/create")]
-        public async Task<IActionResult> PaymentCreate(string id, [FromBody] PaymentRequest request) {
-            await _service.PaymentCreate(id, request);
+        [HttpPost("payment/create")]
+        public async Task<IActionResult> PaymentCreate([FromBody] PaymentRequest request) {
+            await _service.Payment(request);
             return Result(new BaseResponse());
         }
 
-        [HttpPost("receipt/{id}/update")]
-        public async Task<IActionResult> ReceiveUpdate(string id, [FromBody] ReceiptRequest request) {
-            await _service.Receipt(id, request);
+        [HttpPost("receipt/update")]
+        public async Task<IActionResult> ReceiveUpdate([FromBody] ReceiptRequest request) {
+            await _service.Receipt(request);
             return Result(new BaseResponse());
         }
     }

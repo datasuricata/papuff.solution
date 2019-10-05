@@ -3,6 +3,7 @@ using System;
 
 namespace papuff.domain.Arguments.Users {
     public class PaymentRequest {
+        public string WalletId {get;set;}
         public DateTime Expiration { get; set; }
         public PaymentType Type { get; set; }
         public int Code { get; set; }

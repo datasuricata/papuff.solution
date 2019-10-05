@@ -2,6 +2,7 @@
 
 namespace papuff.domain.Arguments.Users {
     public class ReceiptRequest {
+        public string WalletId { get; set; }
         public string Agency { get; set; }
         public string Account { get; set; }
         public int DateDue { get; set; }

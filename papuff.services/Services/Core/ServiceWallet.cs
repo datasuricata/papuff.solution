@@ -47,12 +47,12 @@ namespace papuff.services.Services.Core {
             }
         }
 
-        public async Task Receipt(string walletId, ReceiptRequest param) {
-            var current = await _repoReceipt.By(false, r => r.WalletId == walletId);
+        public async Task Receipt(ReceiptRequest param) {
+            var current = await _repoReceipt.By(false, r => r.WalletId == param.WalletId);
 
             if(current is null) {
                 var receipt = new Receipt(param.Agency, param.Account, 
-                    param.DateDue, walletId);
+                    param.DateDue, param.WalletId);
 
                 _notify.Validate(receipt, new ReceiptValidator());
                 await _repoReceipt.Register(receipt);
@@ -65,15 +65,20 @@ namespace papuff.services.Services.Core {
 
         #region - payment -
 
-        public async Task PaymentCreate(string walletId, PaymentRequest param) {
+        public async Task Payment(PaymentRequest param) {
             var payment = new Payment(param.Card, param.Expiration, param.Code,
-                param.DateDue, param.Document, param.IsDefault, param.Type, walletId);
+                param.DateDue, param.Document, param.IsDefault, param.Type, param.WalletId);
 
             _notify.Validate(payment, new PaymentValidator());
             await _repoPayment.Register(payment);
         }
 
-        public async Task PaymentDelete(string id) {
+        /// <summary>
+        /// delete 
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public async Task Payment(string id) {
             var current = await _repoPayment.ById(false, id);
             current.IsDeleted = true;
 

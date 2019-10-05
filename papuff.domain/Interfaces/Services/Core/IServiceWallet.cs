@@ -9,9 +9,9 @@ namespace papuff.domain.Interfaces.Services.Core {
         Task<Wallet> GetByUser(string logged);
 
         Task Wallet(string userId);
-        Task Receipt(string walletId, ReceiptRequest param);
+        Task Receipt(ReceiptRequest param);
 
-        Task PaymentCreate(string walletId, PaymentRequest param);
-        Task PaymentDelete(string id);
+        Task Payment(PaymentRequest param);
+        Task Payment(string id);
     }
 }

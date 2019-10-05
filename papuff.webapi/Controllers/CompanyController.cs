@@ -7,36 +7,43 @@ using papuff.domain.Arguments.Users;
 using papuff.domain.Interfaces.Services.Core;
 using papuff.domain.Security;
 using papuff.webapi.Controllers.Base;
+using System.Linq;
 using System.Threading.Tasks;
 
 namespace papuff.webapi.Controllers {
     [Route("api/[controller]")]
     [Authorize]
     [ApiController]
-    public class EnterpriseController : BaseController {
+    public class CompanyController : BaseController {
 
         private readonly IServiceCompany _service;
 
-        public EnterpriseController(IServiceCompany service) {
+        public CompanyController(IServiceCompany service) {
             _service = service;
+        }
+
+        [HttpGet("me")]
+        public async Task<IActionResult> Me() {
+            var result = await _service.GetByUser(LoggedLess);
+            return Result(result.ToList().ConvertAll(e =>(CompanyResponse)e));
         }
 
         [HttpGet("byId/{id}")]
         public async Task<IActionResult> ById(string id) {
             var result = await _service.GetById(id);
-            return Result(result);
+            return Result((CompanyResponse)result);
         }
 
         [HttpGet("byUser/{id}")]
         public async Task<IActionResult> ByUser(string id) {
             var result = await _service.GetByUser(id);
-            return Result(result);
+            return Result(result.ToList().ConvertAll(e => (CompanyResponse)e));
         }
 
         [HttpGet("all")]
         public async Task<IActionResult> All() {
             var result = await _service.GetCompanies();
-            return Result(result);
+            return Result(result.ToList().ConvertAll(e => (CompanyResponse)e));
         }
 
         [HttpPost("create")]
