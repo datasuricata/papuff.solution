@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using papuff.domain.Arguments.Base;
-using papuff.domain.Arguments.Generals;
 using papuff.domain.Arguments.Security;
 using papuff.domain.Arguments.Users;
 using papuff.domain.Core.Enums;
@@ -11,7 +10,8 @@ using papuff.webapi.Controllers.Base;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace papuff.webapi.Controllers {
+namespace papuff.webapi.Controllers
+{
     [Route("api/[controller]")]
     [Authorize]
     [ApiController]
@@ -64,10 +64,17 @@ namespace papuff.webapi.Controllers {
         public async Task<IActionResult> Operator([FromBody] UserRequest request) {
 
             // todo - pass into filter attribute
-            _notify.When<UserController>(Logged.Type == UserType.Root, 
+            _notify.When<UserController>(Logged.Type == UserType.Root,
                 "Você não possui privilégio.");
 
             await _service.Create(request, UserType.Operator);
+            return Result(new BaseResponse());
+        }
+
+        [AllowAnonymous]
+        [HttpPost("single")]
+        public async Task<IActionResult> Single([FromBody] RegisterRequest request){
+            await _service.Single(request);
             return Result(new BaseResponse());
         }
 

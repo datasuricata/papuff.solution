@@ -17,6 +17,7 @@ namespace papuff.domain.Interfaces.Services.Core {
         Task<AuthResponse> Authenticate(AuthRequest request);
 
         Task Create(UserRequest request, UserType type);
+        Task Single (RegisterRequest request);
         Task Update(UserRequest request);
     }
 }
