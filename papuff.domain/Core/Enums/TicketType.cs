@@ -3,18 +3,18 @@
 namespace papuff.domain.Core.Enums {
     public enum TicketType {
         [Display(Description = "Simples")]
-        Simple = 0,
+        Simple = 1,
 
         [Display(Description = "Vip")]
-        Vip = 1,
+        Vip = 2,
 
         [Display(Description = "Plateia")]
-        Audience = 2,
+        Audience = 3,
 
         [Display(Description = "Bastidores")]
-        Backstage = 3,
+        Backstage = 4,
 
         [Display(Description = "Camarote")]
-        Cabin = 4,
+        Cabin = 5,
     }
 }

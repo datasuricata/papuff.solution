@@ -36,7 +36,7 @@ namespace papuff.webapi.Controllers {
             return Result((WalletResponse)result);
         }
 
-        [HttpGet("wallet/{id}")]
+        [HttpGet("single/{id}")]
         public async Task<IActionResult> WalletCreate(string id) {
             await _service.Wallet(id);
             return Result(new BaseResponse());

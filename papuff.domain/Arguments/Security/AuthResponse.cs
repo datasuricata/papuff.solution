@@ -14,7 +14,7 @@ namespace papuff.domain.Arguments.Security {
             return v == null ? null : new AuthResponse {
                 Id = v.Id,
                 Email = v.Email,
-                Name = v.General.Name,
+                Name = v.General?.Name,
                 Type = v.Type,
             };
         }

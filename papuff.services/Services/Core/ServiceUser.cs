@@ -9,12 +9,14 @@ using Microsoft.IdentityModel.Tokens;
 using papuff.domain.Arguments.Security;
 using papuff.domain.Arguments.Users;
 using papuff.domain.Core.Enums;
+using papuff.domain.Core.Generals;
 using papuff.domain.Core.Users;
 using papuff.domain.Core.Wallets;
 using papuff.domain.Interfaces.Repositories;
 using papuff.domain.Interfaces.Services.Core;
 using papuff.domain.Security;
 using papuff.services.Services.Base;
+using papuff.services.Validators.Core.Generals;
 using papuff.services.Validators.Core.Users;
 
 namespace papuff.services.Services.Core {
@@ -134,6 +136,8 @@ namespace papuff.services.Services.Core {
         }
 
         public async Task Single (RegisterRequest request) {
+            #region - validator -
+            
             _notify.When<ServiceUser> (request.Password != request.ConfirmPassword,
                 "Senhas informadas estão diferentes.");
 
@@ -145,17 +149,21 @@ namespace papuff.services.Services.Core {
                 _repoUser.Exist (u => u.Nick.Equals (request.Nick, StringComparison.InvariantCultureIgnoreCase)),
                 "Este nick já esta em uso.");
 
+            #endregion
+
             var user = new User (request.Email, request.Password.Encrypt (), request.Nick);
             user.SetType (UserType.Enterprise);
-
             _notify.Validate (user, new UserValidator ());
+
+            var general = new General(DateTime.Now, request.Name, null, CurrentStage.Pending, user.Id);
+            _notify.Validate(general, new GeneralValidator());
+            user.General = general;
 
             var address = new Address (request.Address.Building, request.Address.Number, request.Address.Complement,
                 request.Address.AddressLine, request.Address.District, request.Address.City, request.Address.StateProvince,
                 request.Address.Country, request.Address.PostalCode, user.Id, request.Address.Building == BuildingType.Commercial);
-            user.Address = address;
-
             _notify.Validate (address, new AddressValidator ());
+            user.Address = address;
 
             await _repoUser.Register (user);
         }
