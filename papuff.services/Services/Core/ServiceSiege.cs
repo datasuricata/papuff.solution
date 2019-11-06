@@ -11,7 +11,6 @@ using papuff.domain.Interfaces.Services.Core;
 using papuff.domain.Interfaces.Services.Swap;
 using papuff.services.Hubs;
 using papuff.services.Services.Base;
-using papuff.services.Validators.Core.Companies;
 using papuff.services.Validators.Core.Sieges;
 using System;
 using System.Collections.Generic;
