@@ -8,7 +8,7 @@ using System.Linq;
 namespace papuff.services.Services.Swap {
     public sealed class SwapSiege : ISwapSiege {
 
-        private static readonly List<Siege> Sieges = new List<Siege>();
+        private readonly List<Siege> Sieges = new List<Siege>();
         private static readonly object _lock = new object();
 
         public Siege GetById(string id) {

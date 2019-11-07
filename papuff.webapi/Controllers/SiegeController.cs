@@ -5,6 +5,7 @@ using papuff.domain.Arguments.Companies;
 using papuff.domain.Arguments.Sieges;
 using papuff.domain.Interfaces.Services.Core;
 using papuff.domain.Security;
+using papuff.services.Services.Core;
 using papuff.webapi.Controllers.Base;
 using System.Threading.Tasks;
 
@@ -13,9 +14,9 @@ namespace papuff.webapi.Controllers {
     [Authorize]
     [ApiController]
     public class SiegeController : BaseController {
-        private readonly IServiceSiege _service;
+        private readonly ServiceSiege _service;
 
-        public SiegeController(IServiceSiege service) {
+        public SiegeController(ServiceSiege service) {
             _service = service;
         }
 

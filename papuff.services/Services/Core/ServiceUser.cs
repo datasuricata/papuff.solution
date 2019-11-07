@@ -27,9 +27,7 @@ namespace papuff.services.Services.Core {
         /// Use this to retrive JWT key from config
         /// </summary>
         private readonly IConfiguration _appConf;
-
         private readonly IRepository<User> _repoUser;
-        private readonly IRepository<Wallet> _repoWallet;
 
         #endregion
 
@@ -37,11 +35,9 @@ namespace papuff.services.Services.Core {
 
         public ServiceUser (IServiceProvider provider,
             IConfiguration appConf,
-            IRepository<User> repoUser,
-            IRepository<Wallet> repoWallet) : base (provider) {
+            IRepository<User> repoUser) : base (provider) {
             _appConf = appConf;
             _repoUser = repoUser;
-            _repoWallet = repoWallet;
         }
 
         #endregion

@@ -15,6 +15,7 @@ using papuff.services.Validators.Notifications.Events;
 namespace papuff.bootstrap {
     public static class Bootstrap {
         public static void Configure(IServiceCollection services, string conn) {
+
             #region - context -
 
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(conn));
@@ -38,12 +39,13 @@ namespace papuff.bootstrap {
             services.AddScoped(typeof(IServiceAddress), typeof(ServiceAddress));
             services.AddScoped(typeof(IServiceDocument), typeof(ServiceDocument));
             services.AddScoped(typeof(IServiceWallet), typeof(ServiceWallet));
+            services.AddScoped(typeof(IServiceGuide), typeof(ServiceGuide));
 
             #endregion
 
             #region - swap -
 
-            services.AddScoped(typeof(ISwapSiege), typeof(SwapSiege));
+            services.AddSingleton(typeof(ISwapSiege), typeof(SwapSiege));
 
             #endregion
         }
